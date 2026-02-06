@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="ru">
+{% extends "base.html" %}
+
+{% block title %}Главная страница{% endblock %}
+
+{% block content %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Архитектурные памятники Иваново</title>
+    <meta charset="utf-8">
+    <style>
+        #map {
+            width: 600px;
+            height: 400px;
+        }
+    </style>
+    <style>
+        /* Стили для галочек/отметок */
+        .btn-house {
+            position: relative;
+        }
+
+        .visit-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            z-index: 10;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .visit-badge.visible {
+            opacity: 1;
+        }
+
+        .btn-house:hover .visit-badge {
+            transform: scale(1.1);
+        }
+
+        /* Стили для кнопки отметки в плашке */
+        .visit-control {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .btn-visit {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-visit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-visit.visited {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+        }
+
+        .visit-icon {
+            font-size: 1.2rem;
+        }
+
+        .visit-stats {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .visit-count {
+            font-weight: bold;
+            color: #667eea;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ИЗМЕНЕНИЕ: Белый фон страницы */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: white;
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #333;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        /* БЛОК 1: ЗАГОЛОВОК */
+        .header-block {
+            text-align: center;
+            color: #333; /* Темный текст */
+            padding: 40px 20px;
+            background: white; /* Белый фон */
+            border-radius: 20px;
+            border: 1px solid #e0e0e0; /* Светлая граница */
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1); /* Тень */
+        }
+
+        .header-block h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #2c3e50; /* Темно-синий */
+        }
+
+        .header-block p {
+            font-size: 1.3rem;
+            opacity: 0.8;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.5;
+            color: #666;
+        }
+
+        /* БЛОК 2: ДОБРО ПОЖАЛОВАТЬ */
+        .welcome-block {
+            background: white; /* Белый фон */
+            border-radius: 20px;
+            padding: 40px;
+            color: #333; /* Темный текст */
+            border: 1px solid #e0e0e0; /* Светлая граница */
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1); /* Тень */
+        }
+
+        .welcome-header {
+            margin-bottom: 25px;
+        }
+
+        .welcome-header h2 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            color: #2c3e50; /* Темно-синий */
+        }
+
+        .welcome-header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.7;
+            color: #666;
+        }
+
+        .welcome-content {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            margin-bottom: 30px;
+            color: #555;
+        }
+
+        .welcome-content p {
+            margin-bottom: 15px;
+        }
+
+        /* Блок кнопок авторизации */
+        .auth-block {
+            background: #f8f9fa; /* Светло-серый фон */
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+
+        /* БЛОК С КНОПКАМИ ГОРИЗОНТАЛЬНО */
+        .houses-block {
+            background: white; /* Белый фон */
+            border-radius: 20px;
+            padding: 35px;
+            border: 1px solid #e0e0e0; /* Светлая граница */
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1); /* Тень */
+            width: 100%;
+        }
+
+        .houses-header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333; /* Темный текст */
+        }
+
+        .houses-header h3 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .houses-header p {
+            opacity: 0.7;
+            font-size: 1rem;
+            color: #666;
+        }
+
+        /* ГОРИЗОНТАЛЬНАЯ СЕТКА ДЛЯ КНОПОК */
+        .houses-grid {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        /* Стили для горизонтальных кнопок */
+        .btn-house {
+            background: white;
+            border: none;
+            border-radius: 15px;
+            padding: 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15); /* Более мягкая тень */
+            overflow: hidden;
+            position: relative;
+            width: 500px; /* Фиксированная ширина для горизонтального расположения */
+            height: 350px; /* Фиксированная высота */
+        }
+
+        .btn-house:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2); /* Более мягкая тень */
+        }
+
+        .btn-house img {
+            width: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-house:hover img {
+            transform: scale(1.05);
+        }
+
+        .btn-house::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px; /* Увеличил градиент для текста */
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+        }
+
+        .house-title {
+            position: absolute;
+            bottom: 25px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: white;
+            font-size: 1.3rem;
+            font-weight: bold;
+            z-index: 2;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+            padding: 0 15px;
+        }
+
+        /* Общие стили кнопок */
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            text-align: center;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            min-width: 160px;
+        }
+
+        .btn-primary {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-secondary {
+            background: #2196F3;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #1976D2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #667eea; /* Синий цвет текста */
+            border: 2px solid #667eea; /* Синяя рамка */
+        }
+
+        .btn-outline:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-page2 {
+            background: #FF6B6B;
+            color: white;
+        }
+
+        .btn-page2:hover {
+            background: #FF5252;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .user-welcome {
+            text-align: center;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .user-welcome p {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        /* Стили для плашек */
+        .plashka {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 0;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2); /* Более мягкая тень */
+            z-index: 1000;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            width: 90%;
+        }
+
+        .plashka-header {
+            position: relative;
+            height: 300px;
+            overflow: hidden;
+        }
+
+        .plashka-header img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .plashka-title {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+            padding: 30px 30px 20px;
+        }
+
+        .plashka-title h2 {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .plashka-title .address {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .plashka-content {
+            padding: 30px;
+        }
+
+        .content-section {
+            margin-bottom: 25px;
+        }
+
+        .content-section h3 {
+            color: #333;
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 5px;
+        }
+
+        .content-section p {
+            color: #555;
+            line-height: 1.7;
+            font-size: 1rem;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 999;
+            backdrop-filter: blur(5px);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            cursor: pointer;
+            font-size: 30px;
+            background: rgba(255,255,255,0.9);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .close-btn:hover {
+            background: white;
+            transform: scale(1.1);
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .info-box h3 {
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        /* Стилизация скроллбара */
+        .plashka::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .plashka::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 0 0 20px 0;
+        }
+
+        .plashka::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 4px;
+        }
+
+        .plashka::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
+
+        /* Адаптивность для горизонтального расположения */
+        @media (max-width: 1200px) {
+            .btn-house {
+                width: 280px;
+                height: 330px;
+            }
+
+            .btn-house img {
+                height: 230px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .btn-house {
+                width: 250px;
+                height: 300px;
+            }
+
+            .btn-house img {
+                height: 200px;
+            }
+
+            .house-title {
+                font-size: 1.2rem;
+                bottom: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-block h1 {
+                font-size: 2.2rem;
+            }
+
+            .header-block p {
+                font-size: 1.1rem;
+            }
+
+            .welcome-block {
+                padding: 25px;
+            }
+
+            .welcome-header h2 {
+                font-size: 1.8rem;
+            }
+
+            .houses-block {
+                padding: 25px;
+            }
+
+            .houses-grid {
+                gap: 20px;
+            }
+
+            .btn-house {
+                width: 45%; /* Две кнопки в ряд */
+                height: 280px;
+            }
+
+            .btn-house img {
+                height: 180px;
+            }
+
+            .house-title {
+                font-size: 1.1rem;
+                bottom: 15px;
+            }
+
+            .auth-buttons,
+            .nav-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 200px;
+            }
+
+            .plashka {
+                width: 95%;
+            }
+
+            .plashka-title h2 {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .btn-house {
+                width: 90%; /* Одна кнопка в ряд */
+                max-width: 300px;
+                height: 260px;
+            }
+
+            .btn-house img {
+                height: 160px;
+            }
+
+            .house-title {
+                font-size: 1rem;
+            }
+
+            .houses-header h3 {
+                font-size: 1.5rem;
+            }
+        }
+        .header-block {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .header-block h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+        }
+
+        .intro-text {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: #555;
+            margin-bottom: 30px;
+            text-align: justify;
+        }
+
+        .route-guide-title {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            margin: 40px 0 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+            text-align: left;
+        }
+
+        .instructions-list {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .instruction-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .instruction-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .instruction-number {
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .instruction-text {
+            font-size: 1.1rem;
+            color: #333;
+            line-height: 1.5;
+            flex: 1;
+        }
+
+        .tip-section {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border-left: 4px solid #667eea;
+            padding: 20px 25px;
+            border-radius: 0 10px 10px 0;
+            margin-top: 30px;
+        }
+
+        .tip-title {
+            color: #2c3e50;
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tip-title::before {
+            content: '💡';
+            font-size: 1.2rem;
+        }
+
+        .tip-text {
+            font-size: 1.1rem;
+            color: #555;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .header-block {
+                padding: 25px 20px;
+            }
+
+            .header-block h1 {
+                font-size: 2rem;
+            }
+
+            .route-guide-title {
+                font-size: 1.5rem;
+            }
+
+            .instructions-list {
+                padding: 20px;
+            }
+
+            .instruction-text {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-block {
+                padding: 20px 15px;
+            }
+
+            .header-block h1 {
+                font-size: 1.8rem;
+            }
+
+            .instruction-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .instruction-number {
+                margin-bottom: 10px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- БЛОК 1: ЗАГОЛОВОК -->
+        <div class="header-block">
+            <h1>Текст</h1>
+            <p class="intro-text">Текст</p>
+        </div>
+
+        <!-- БЛОК 2: ДОБРО ПОЖАЛОВАТЬ -->
+        <div class="welcome-block">
+            <meta charset="utf-8">
+            <script type="text/javascript" charset="utf-8" async src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3A24a7abaa86c282c84c251aa216a9a16ba240ae47e53f468b018a1f56208a4585&amp;width=1075&amp;height=400&amp;lang=ru_RU&amp;scroll=true"></script>
+        </div>
+
+        <!-- БЛОК С КНОПКАМИ ГОРИЗОНТАЛЬНО -->
+        <div class="houses-block">
+            <div class="houses-header">
+                <h3>Дом-птица</h3>
+                <p>Адрес: пр. Ленина, 53</p>
+            </div>
+
+            <!-- ГОРИЗОНТАЛЬНАЯ СЕТКА -->
+            <div class="houses-grid">
+                <button onclick="showPlashka('plashka1')" class="btn-house">
+                    <div class="visit-badge" id="badge-1">✓</div>
+                    <img src="https://extraguide.ru/images/blog/2023/01-14-4t0uje-dom-ptitsa.jpg" alt="Дом-птица">
+                    <div class="house-title">Дом-птица</div>
+                </button>
+                <script type="text/javascript" charset="utf-8" async src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3Ae49949002beb9c33a803bd5471d7ad3d676f9b7b518e0628643e31f592811d15&amp;width=500&amp;height=350&amp;lang=ru_RU&amp;scroll=true"></script>
+            </div>
+        </div>
+    </div>
+
+    <!-- Остальной код остается без изменений -->
+    <!-- Оверлей и плашки -->
+    <div class="overlay" id="overlay" onclick="hideAllPlashkas()"></div>
+
+    <!-- Плашка 1 - Дом-птица -->
+    <div class="plashka" id="plashka1">
+        <div class="plashka-header">
+            <img src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2d/51/8d/b0/caption.jpg?w=1200" alt="Дом-птица">
+            <div class="plashka-title">
+                <h2>Дом-птица</h2>
+                <div class="address">Адрес: пр. Ленина, 53</div>
+            </div>
+        </div>
+        <button class="close-btn" onclick="hideAllPlashkas()">×</button>
+
+        <div class="plashka-content">
+            <div class="content-section">
+                <h3>📖 История</h3>
+                <p>Здание построено в 1928 году по проекту архитектора Василия Ивановича Панкова (1897–1973), одного из ярких представителей ивановской школы конструктивизма.</p>
+                <p>Цель строительства: здание возводилось для Первой советской школы второй степени десятилетия Октябрьской революции, созданной в 1918 году на базе реального училища. Школа, переезжавшая несколько раз (в 1922 году — в здание бывшей гимназии Крамаревской), получила новое здание, спроектированное с учётом прогрессивных образовательных идей: просторные классы, естественное освещение и даже собственная обсерватория.</p>
+                <p>В советское время к левому крылу была пристроена дополнительная часть, что слегка исказило оригинальный «птичий» силуэт, но не уничтожило его.</p>
+                <p>В 1997 году Дом-птица был признан объектом культурного наследия регионального значения, что защитило его от сноса или радикальной перестройки.</p>
+            </div>
+
+            <div class="content-section">
+                <h3>🏛️ Архитектура</h3>
+                <p>Симметричный план напоминает летящую птицу с раскрытыми крыльями.</p>
+                <p>Фасад асимметричен за счёт обсерватории, устроенной над левом крылом. По замыслу архитектора, в башне должен был быть установлен телескоп для астрономических наблюдений.</p>
+                <p>Стены из красного кирпича перемежаются оштукатуренными серыми вставками под бетон.</p>
+            </div>
+
+            <div class="content-section">
+                <h3>🏫 Современное использование</h3>
+                <p>По состоянию на 2025 год Дом-птица остаётся действующей гимназией №32 с углублённым изучением английского языка.</p>
+                <p>Однако состояние здания вызывает обеспокоенность из-за износа конструкций, особенно башни-обсерватории. Планы по её восстановлению обсуждались в 2010-х годах, но не были реализованы из-за ограниченного финансирования.</p>
+            </div>
+        </div>
+        <div class="visit-control" id="visit-control-1">
+            <button class="btn-visit" onclick="toggleVisit(1)" id="visit-btn-1">
+                <span class="visit-icon">☐</span>
+                <span class="visit-text">Отметить посещение</span>
+            </button>
+            <div class="visit-stats">
+                Посетили: <span class="visit-count" id="visit-count-1">0</span> пользователей
+            </div>
+        </div>
+    </div>
+    <script>
+        function showPlashka(plashkaId) {
+            // Сначала скрываем все плашки
+            hideAllPlashkas();
+
+            // Показываем нужную плашку
+            document.getElementById(plashkaId).style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+
+            // Блокируем прокрутку body
+            document.body.style.overflow = 'hidden';
+        }
+
+        function hideAllPlashkas() {
+            // Скрываем все плашки
+            const plashkas = document.querySelectorAll('.plashka');
+            plashkas.forEach(plashka => {
+                plashka.style.display = 'none';
+            });
+
+            // Скрываем оверлей
+            document.getElementById('overlay').style.display = 'none';
+
+            // Разблокируем прокрутку body
+            document.body.style.overflow = 'auto';
+        }
+
+        // Закрытие по клавише ESC
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                hideAllPlashkas();
+            }
+        });
+
+        // Предотвращаем закрытие при клике на саму плашку
+        document.querySelectorAll('.plashka').forEach(plashka => {
+            plashka.addEventListener('click', function(event) {
+                event.stopPropagation();
+            });
+        });
+
+        // Хранилище для посещённых мест (в реальном проекте будет API)
+        let visitedPlaces = JSON.parse(localStorage.getItem('visited_places') || '[]');
+
+        // Функция обновления отображения галочек
+        function updateVisitBadges() {
+            // Для всех кнопок
+            [1, 2, 3, 4].forEach(id => {
+                const badge = document.getElementById(`badge-${id}`);
+                const btn = document.getElementById(`visit-btn-${id}`);
+
+                if (badge && visitedPlaces.includes(id.toString())) {
+                    badge.classList.add('visible');
+                    if (btn) {
+                        btn.classList.add('visited');
+                        btn.querySelector('.visit-text').textContent = 'Посещено ✓';
+                    }
+                } else {
+                    if (badge) badge.classList.remove('visible');
+                    if (btn) {
+                        btn.classList.remove('visited');
+                        btn.querySelector('.visit-text').textContent = 'Отметить посещение';
+                    }
+                }
+            });
+        }
+
+        // Функция переключения отметки
+        function toggleVisit(placeId) {
+            // Проверяем авторизацию (в реальном проекте через session)
+            const isLoggedIn = {{ 'true' if session.user_id else 'false' }};
+
+            if (!isLoggedIn) {
+                alert('Для отметки посещения необходимо войти в систему!');
+                hideAllPlashkas();
+                return;
+            }
+
+            const placeIdStr = placeId.toString();
+            const index = visitedPlaces.indexOf(placeIdStr);
+
+            if (index === -1) {
+                // Добавляем отметку
+                visitedPlaces.push(placeIdStr);
+
+                // В реальном проекте здесь будет запрос к API:
+                // fetch('/api/visit', {
+                //     method: 'POST',
+                //     headers: {'Content-Type': 'application/json'},
+                //     body: JSON.stringify({place_id: placeId, action: 'add'})
+                // });
+
+                // Обновляем счётчик
+                const countElement = document.getElementById(`visit-count-${placeId}`);
+                if (countElement) {
+                    const currentCount = parseInt(countElement.textContent) || 0;
+                    countElement.textContent = currentCount + 1;
+                }
+
+                alert('Место отмечено как посещённое!');
+            } else {
+                // Удаляем отметку
+                visitedPlaces.splice(index, 1);
+
+                // В реальном проекте здесь будет запрос к API:
+                // fetch('/api/visit', {
+                //     method: 'POST',
+                //     headers: {'Content-Type': 'application/json'},
+                //     body: JSON.stringify({place_id: placeId, action: 'remove'})
+                // });
+
+                // Обновляем счётчик
+                const countElement = document.getElementById(`visit-count-${placeId}`);
+                if (countElement) {
+                    const currentCount = parseInt(countElement.textContent) || 1;
+                    countElement.textContent = Math.max(0, currentCount - 1);
+                }
+
+                alert('Отметка о посещении удалена!');
+            }
+
+            // Сохраняем в localStorage (временное решение)
+            localStorage.setItem('visited_places', JSON.stringify(visitedPlaces));
+
+            // Обновляем отображение
+            updateVisitBadges();
+
+            // Обновляем профиль, если открыта страница профиля
+            if (window.updateProfileVisits) {
+                updateProfileVisits();
+            }
+        }
+
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            updateVisitBadges();
+
+            // Устанавливаем начальные значения счётчиков
+            [1, 2, 3, 4].forEach(id => {
+                const countElement = document.getElementById(`visit-count-${id}`);
+                if (countElement) {
+                    // В реальном проекте загружаем с сервера
+                    countElement.textContent = '3'; // Примерное число
+                }
+            });
+        });
+    </script>
+</body>
+
+{% endblock %}
+</html>

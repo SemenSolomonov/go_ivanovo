@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="ru">
+{% extends "base.html" %}
+
+{% block title %}Главная страница{% endblock %}
+
+{% block content %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Архитектурные памятники Иваново</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ИЗМЕНЕНИЕ 1: Белый фон страницы */
+        body {
+            font-family: 'Inter', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* БЛОК С ГОРИЗОНТАЛЬНЫМИ КНОПКАМИ */
+        .houses-block {
+            background: white;
+            border-radius: 24px;
+            padding: 50px 40px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            width: 100%;
+            transition: transform 0.3s ease;
+        }
+
+        .houses-block:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.12);
+        }
+
+        .houses-header {
+            text-align: center;
+            margin-bottom: 50px;
+            color: #2c3e50;
+        }
+
+        .houses-header h3 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .houses-header h3::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
+        }
+
+        .houses-header .subtitle {
+            font-size: 1.3rem;
+            color: #666;
+            max-width: 800px;
+            margin: 30px auto 0;
+            line-height: 1.8;
+            font-weight: 400;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        /* ГОРИЗОНТАЛЬНАЯ СЕТКА ДЛЯ КНОПОК */
+        .houses-grid {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 40px;
+        }
+
+        /* Кнопки домов - горизонтальный вариант */
+        .btn-house {
+            background: white;
+            border: none;
+            border-radius: 20px;
+            padding: 0;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+            width: 380px;
+            height: 280px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-house:hover {
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(102, 126, 234, 0.25);
+        }
+
+        .btn-house::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: 1;
+        }
+
+        .btn-house:hover::before {
+            opacity: 1;
+        }
+
+        .btn-house img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-house:hover img {
+            transform: scale(1.1);
+        }
+
+        .btn-house::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
+            z-index: 1;
+        }
+
+        .house-title {
+            position: absolute;
+            bottom: 25px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 600;
+            z-index: 2;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+            padding: 0 20px;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-house:hover .house-title {
+            transform: translateY(-5px);
+            font-size: 1.55rem;
+        }
+
+        /* Ссылка как кнопка */
+        .btn-house-link {
+            display: block;
+            text-decoration: none;
+            background: white;
+            border-radius: 20px;
+            padding: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+            width: 380px;
+            height: 280px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-house-link:hover {
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(102, 126, 234, 0.25);
+        }
+
+        .btn-house-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: 1;
+        }
+
+        .btn-house-link:hover::before {
+            opacity: 1;
+        }
+
+        .btn-house-link img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-house-link:hover img {
+            transform: scale(1.1);
+        }
+
+        .btn-house-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
+            z-index: 1;
+        }
+
+        /* Эффект подписи "Скоро" для неактивных кнопок */
+        .coming-soon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(102, 126, 234, 0.95);
+            color: white;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            z-index: 3;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            transform: translateY(-10px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .btn-house:hover .coming-soon {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Стили для плашек (оставлены для будущего использования) */
+        .plashka {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 0;
+            border-radius: 24px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+            z-index: 1000;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            width: 90%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 999;
+            backdrop-filter: blur(10px);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            font-size: 32px;
+            background: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            color: #2c3e50;
+            font-weight: 300;
+        }
+
+        .close-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: rotate(90deg) scale(1.1);
+        }
+
+        /* Анимация появления */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .houses-header h3,
+        .houses-header .subtitle,
+        .btn-house,
+        .btn-house-link {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .btn-house-link {
+            animation-delay: 0.2s;
+            opacity: 0;
+        }
+
+        .btn-house:nth-child(2) {
+            animation-delay: 0.3s;
+            opacity: 0;
+        }
+
+        .btn-house:nth-child(3) {
+            animation-delay: 0.4s;
+            opacity: 0;
+        }
+
+        /* Адаптивность для горизонтального расположения */
+        @media (max-width: 1200px) {
+            .btn-house,
+            .btn-house-link {
+                width: 340px;
+                height: 250px;
+            }
+
+            .houses-header h3 {
+                font-size: 2.5rem;
+            }
+
+            .houses-header .subtitle {
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .btn-house,
+            .btn-house-link {
+                width: 300px;
+                height: 220px;
+            }
+
+            .house-title {
+                font-size: 1.3rem;
+                bottom: 20px;
+            }
+
+            .houses-header h3 {
+                font-size: 2.2rem;
+            }
+
+            .houses-block {
+                padding: 40px 30px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .houses-grid {
+                gap: 30px;
+            }
+
+            .btn-house,
+            .btn-house-link {
+                width: 45%;
+                height: 200px;
+            }
+
+            .house-title {
+                font-size: 1.2rem;
+                bottom: 15px;
+            }
+
+            .houses-header h3 {
+                font-size: 2rem;
+            }
+
+            .houses-header .subtitle {
+                font-size: 1.1rem;
+                padding: 0 10px;
+            }
+
+            .coming-soon {
+                font-size: 0.8rem;
+                padding: 5px 12px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .btn-house,
+            .btn-house-link {
+                width: 100%;
+                max-width: 320px;
+                height: 180px;
+            }
+
+            .main-container {
+                padding: 20px 15px;
+            }
+
+            .houses-block {
+                padding: 30px 20px;
+                border-radius: 20px;
+            }
+
+            .houses-header h3 {
+                font-size: 1.8rem;
+                margin-bottom: 15px;
+            }
+
+            .houses-header .subtitle {
+                font-size: 1rem;
+                line-height: 1.6;
+                margin-top: 20px;
+            }
+
+            .houses-grid {
+                gap: 20px;
+                margin-top: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- БЛОК С ГОРИЗОНТАЛЬНЫМИ КНОПКАМИ -->
+        <div class="houses-block">
+            <div class="houses-header">
+                <h3>Маршруты</h3>
+                <p class="subtitle">
+                    Выбирайте маршрут — открывайте Иваново!<br>
+                    Здесь собраны тематические маршруты по городу для туристов любого возраста и интересов.<br>
+                    Каждый маршрут — это продуманный путь с текстовыми подсказками,
+                    историческими фактами и неожиданными открытиями.
+                </p>
+            </div>
+
+            <!-- ГОРИЗОНТАЛЬНАЯ СЕТКА -->
+            <div class="houses-grid">
+                <!-- Кнопка "Дом-птица" теперь ведет на page2 -->
+                <a href="{{ url_for('page2') }}" class="btn-house-link">
+                    <img src="https://sun9-39.userapi.com/s/v1/ig2/ATzL4o5X1NJGWzCDPs8PDy0d9AvcLnmGiHaMOtTc7ml-cqoWrOEYb1-WeID7A3ByhyfZlRuPwWYMKgWIQia4n9XD.jpg?quality=95&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360,480x480,540x540,640x640,720x720,1080x1080,1280x1280,1440x1440,2560x2560&from=bu&cs=2560x0" alt="Дом-птица">
+                    <div class="house-title">Дома-Метафоры</div>
+                </a>
+
+                <!-- Остальные кнопки (временно неактивны) -->
+
+                <a href="{{ url_for('page3') }}" class="btn-house-link">
+                    <img src="https://sun9-78.userapi.com/s/v1/ig2/pv5veTfTOpOadDuUqCQrhdh1FfPiiimQSvsVKahQSwNYXvPoeThzOmLnb4f4lG-WBbxjbOWbjNDvu0g9M5Ko21sp.jpg?quality=95&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360,480x480,540x540,640x640,720x720,1080x1080,1280x1280,1440x1441,2559x2560&from=bu&cs=2559x0" alt="Дом-подкова">
+                    <div class="house-title">Арт-объекты</div>
+                </a>
+
+                <a href="{{ url_for('page4') }}" class="btn-house-link">
+
+                    <img src="https://sun9-63.userapi.com/s/v1/ig2/9jwrS5mdY2wVe_8VLwaQszHUK0temySYFIBgF65ZlKXrQfpFu_f2EHiUREq2y0U-ZbDDTDCQq2FAoDcqwb6yfXC4.jpg?quality=95&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360,480x480,540x540,640x640,720x720,1080x1080,1280x1280,1440x1441,2559x2560&from=bu&cs=2559x0" alt="Дом-корабль">
+                    <div class="house-title">Музеи</div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Оверлей (оставлен для будущего использования) -->
+    <div class="overlay" id="overlay" onclick="hideAllPlashkas()"></div>
+
+    <script>
+        function showPlashka(plashkaId) {
+            // Временная заглушка для неактивных маршрутов
+            alert('Этот маршрут появится в ближайшее время! Сейчас доступен только маршрут "Дома-Метафоры".');
+            return;
+
+            hideAllPlashkas();
+            document.getElementById(plashkaId).style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function hideAllPlashkas() {
+            const plashkas = document.querySelectorAll('.plashka');
+            plashkas.forEach(plashka => {
+                plashka.style.display = 'none';
+            });
+            document.getElementById('overlay').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                hideAllPlashkas();
+            }
+        });
+
+        // Добавляем класс для анимации при загрузке
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.btn-house, .btn-house-link').forEach((btn, index) => {
+                btn.style.animationDelay = `${0.2 + index * 0.1}s`;
+            });
+        });
+    </script>
+</body>
+
+{% endblock %}
+</html>

@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="ru">
+{% extends "base.html" %}
+
+{% block title %}Главная страница{% endblock %}
+
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>О проекте - Архитектурные памятники Иваново</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: white;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Заголовок страницы */
+        .page-header {
+            text-align: center;
+            margin: 40px 0 50px;
+            padding-bottom: 30px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .page-header h1 {
+            font-size: 3rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .page-header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+
+        .page-header .subtitle {
+            font-size: 1.5rem;
+            color: #667eea;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+
+        /* Основной контент */
+        .content-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .section-title {
+            color: #2c3e50;
+            font-size: 2rem;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-title i {
+            color: #667eea;
+            font-size: 1.8rem;
+        }
+
+        /* Введение */
+        .intro-text {
+            font-size: 1.2rem;
+            color: #555;
+            margin-bottom: 25px;
+            line-height: 1.8;
+            text-align: justify;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border-left: 4px solid #667eea;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 0 10px 10px 0;
+        }
+
+        /* Списки */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+
+        .feature-item {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.15);
+            border-color: #667eea;
+        }
+
+        .feature-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(180deg, #667eea, #764ba2);
+        }
+
+        .feature-item h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-item h4 i {
+            color: #667eea;
+        }
+
+        .feature-item ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .feature-item li {
+            margin-bottom: 12px;
+            padding-left: 25px;
+            position: relative;
+            color: #555;
+        }
+
+        .feature-item li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #4CAF50;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        /* Автор проекта */
+        .author-section {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+            padding: 40px;
+            border-radius: 20px;
+            margin: 40px 0;
+            border: 2px solid #667eea;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .author-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border-radius: 0 0 0 100%;
+        }
+
+        .author-info {
+            position: relative;
+            z-index: 1;
+        }
+
+        .author-info h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+
+        .author-quote {
+            font-style: italic;
+            color: #555;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-top: 20px;
+            padding-left: 30px;
+            border-left: 3px solid #667eea;
+        }
+
+        /* Контакты */
+        .contact-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            border: 2px solid #667eea;
+            margin-top: 40px;
+        }
+
+        .contact-section h3 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+
+        .contact-info {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            background: #f8f9fa;
+            padding: 20px 40px;
+            border-radius: 50px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .contact-info:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
+            border-color: #667eea;
+        }
+
+        .contact-info i {
+            color: #667eea;
+            font-size: 1.5rem;
+        }
+
+        .contact-info a {
+            color: #2c3e50;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .contact-info a:hover {
+            color: #667eea;
+        }
+
+        /* Кнопка назад */
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #667eea;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            margin-top: 40px;
+            border: 2px solid #667eea;
+        }
+
+        .back-button:hover {
+            background: white;
+            color: #667eea;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 2.2rem;
+            }
+
+            .page-header .subtitle {
+                font-size: 1.2rem;
+            }
+
+            .content-section {
+                padding: 25px;
+            }
+
+            .section-title {
+                font-size: 1.6rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-info {
+                flex-direction: column;
+                padding: 20px;
+            }
+
+            .author-section {
+                padding: 25px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .page-header h1 {
+                font-size: 1.8rem;
+            }
+
+            .intro-text {
+                font-size: 1.1rem;
+            }
+
+            .feature-item {
+                padding: 20px;
+            }
+
+            .back-button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Анимации */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .content-section {
+            animation: fadeIn 0.6s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Заголовок страницы -->
+        <header class="page-header">
+            <h1>О ПРОЕКТЕ</h1>
+            <div class="subtitle">Иваново — в каждом шаге!</div>
+        </header>
+
+        <!-- Введение -->
+        <section class="content-section">
+
+            <p class="intro-text">
+                Этот сайт — ваш персональный гид по Иваново. Мы собрали лучшие маршруты, интересные факты
+                и игровые задания, чтобы вы могли исследовать город с удовольствием и без лишних хлопот.
+                Здесь нет скучных справочников — только живые истории, красивые места и неожиданные
+                открытия.
+            </p>
+
+            <div class="highlight-box">
+                <p class="intro-text">
+                    Мы верим, что город раскрывается через детали, истории и личные открытия —
+                    и наш сайт помогает их найти.
+                </p>
+            </div>
+        </section>
+
+        <!-- Что вы получите -->
+        <section class="content-section">
+            <div class="section-title">
+                <i class="fas fa-gift"></i>
+                <h2>Что вы получите</h2>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-item">
+                    <h4><i class="fas fa-route"></i> Маршруты и карты</h4>
+                    <ul>
+                        <li>Удобные тематические маршруты под любой интерес и время</li>
+                        <li>Интерактивную карту с точными отметками и подсказками</li>
+                        <li>Текстовые описания каждой точки маршрута</li>
+                    </ul>
+                </div>
+
+                <div class="feature-item">
+                    <h4><i class="fas fa-gamepad"></i> Игровые элементы</h4>
+                    <ul>
+
+                        <li>Личный профиль для отметки пройденных мест</li>
+                        <li>Сохранение любимых маршрутов</li>
+                    </ul>
+                </div>
+
+                <div class="feature-item">
+                    <h4><i class="fas fa-robot"></i> ИИ-помощник</h4>
+                    <ul>
+                        <li>ИИ-чат, который ответит на вопросы о городе</li>
+                        <li>Персональные рекомендации куда пойти дальше</li>
+                        <li>Интересные факты и истории о памятниках</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Для кого этот проект -->
+        <section class="content-section">
+            <div class="section-title">
+                <i class="fas fa-users"></i>
+                <h2>Для кого этот проект</h2>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-item">
+                    <h4><i class="fas fa-suitcase-rolling"></i> Туристам</h4>
+                    <ul>
+                        <li>Приезжающим в Иваново на 1–3 дня</li>
+                        <li>Ищущим интересные маршруты</li>
+                        <li>Желающим узнать город глубже</li>
+                    </ul>
+                </div>
+
+                <div class="feature-item">
+                    <h4><i class="fas fa-home"></i> Жителям города</h4>
+                    <ul>
+                        <li>Местным жителям, которые хотят лучше узнать свой город</li>
+                        <li>Семьям с детьми (игровые элементы делают прогулки увлекательными)</li>
+                    </ul>
+                </div>
+
+                <div class="feature-item">
+                    <h4><i class="fas fa-graduation-cap"></i> Учащимся</h4>
+                    <ul>
+                        <li>Школьникам и студентам, изучающим историю и культуру региона</li>
+                        <li>Для образовательных проектов и исследований</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Как это работает -->
+        <section class="content-section">
+            <div class="section-title">
+                <i class="fas fa-cogs"></i>
+                <h2>Как это работает</h2>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-item">
+                    <h4><i class="fas fa-search"></i> Шаг 1: Выбор</h4>
+                    <ul>
+                        <li>Выберите маршрут из списка</li>
+                        <li>Откройте интерактивную карту и следуйте точкам</li>
+                    </ul>
+                </div>
+
+                <div class="feature-item">
+                    <h4><i class="fas fa-map-marked-alt"></i> Шаг 2: Исследование</h4>
+                    <ul>
+                        <li>Читайте описания, смотрите фото</li>
+                        <li>Отмечайте пройденные точки в профиле</li>
+                    </ul>
+                </div>
+
+                <div class="feature-item">
+                    <h4><i class="fas fa-trophy"></i> Шаг 3: Общение</h4>
+                    <ul>
+
+                        <li>Задавайте вопросы ИИ-чату, если нужно что-то уточнить</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Автор проекта -->
+        <section class="author-section">
+            <div class="author-info">
+                <h3>Кто мы</h3>
+                <p class="intro-text">
+                    Проект создан учеником 9 класса Соломоновым Семёном.
+                    Цель — сделать Иваново ближе и интереснее для каждого, кто хочет его исследовать.
+                </p>
+
+                <p class="author-quote">
+                    "Мы верим, что город раскрывается через детали, истории и личные открытия —
+                    и наш сайт помогает их найти"
+                </p>
+            </div>
+        </section>
+
+        <!-- Контакты -->
+        <section class="contact-section">
+            <h3>Контакты и обратная связь</h3>
+            <div class="contact-info">
+                <i class="fas fa-envelope"></i>
+                <a href="mailto:example@example.com">Напишите нам на email: solomonov.92@internet.ru</a>
+            </div>
+            <p style="margin-top: 20px; color: #666;">
+                Мы открыты для вопросов, предложений и сотрудничества
+            </p>
+        </section>
+
+        <!-- Кнопка возврата -->
+        <div style="text-align: center; margin-top: 50px;">
+            <a href="javascript:history.back()" class="back-button">
+                <i class="fas fa-arrow-left"></i>
+                Вернуться назад
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Плавная прокрутка
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Анимация появления элементов при прокрутке
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Наблюдаем за всеми секциями
+        document.querySelectorAll('.content-section, .author-section, .contact-section').forEach(section => {
+            section.style.opacity = '0';
+            section.style.transform = 'translateY(20px)';
+            section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(section);
+        });
+    </script>
+</body>
+{% endblock %}
+</html>
