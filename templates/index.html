@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="ru">
+{% extends "base.html" %}
+
+{% block title %}Главная страница{% endblock %}
+
+{% block content %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Архитектурные памятники Иваново</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .btn-house {
+            position: relative;
+        }
+
+        .visit-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            z-index: 10;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .visit-badge.visible {
+            opacity: 1;
+        }
+
+        .btn-house:hover .visit-badge {
+            transform: scale(1.1);
+        }
+
+        .visit-control {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .btn-visit {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-visit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-visit.visited {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+        }
+
+        .visit-icon {
+            font-size: 1.2rem;
+        }
+
+        .visit-stats {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .visit-count {
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        /* ИЗМЕНЕНИЕ 1: Белый фон страницы */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: white;
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #333;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        /* БЛОК 1: ЗАГОЛОВОК */
+        .header-block {
+            text-align: center;
+            padding: 40px 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header-block h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header-block p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+
+        /* Стили для изображений в блоке "Как это работает?" */
+        .how-it-works-images {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+            padding: 20px 0;
+        }
+
+        .how-it-works-images img {
+            width: 225px; /* Уменьшенный размер */
+            height: 225px;
+            object-fit: cover;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            border: 3px solid white;
+        }
+
+        .how-it-works-images img:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+            border-color: #667eea;
+        }
+
+        /* БЛОК 2: ДОБРО ПОЖАЛОВАТЬ */
+        .welcome-block {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            color: #333;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .welcome-header {
+            margin-bottom: 25px;
+        }
+
+        .welcome-header h2 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .welcome-header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.7;
+            color: #666;
+        }
+
+        .welcome-content {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            margin-bottom: 30px;
+            color: #555;
+        }
+
+        .welcome-content p {
+            margin-bottom: 15px;
+        }
+
+        /* Блок кнопок авторизации */
+        .auth-block {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+
+        /* БЛОК 3: ОДИН БЛОК С 4 КНОПКАМИ */
+        .houses-block {
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .houses-header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #2c3e50;
+        }
+
+        .houses-header h3 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .houses-header p {
+            opacity: 0.7;
+            font-size: 1.1rem;
+            color: #666;
+        }
+
+        .houses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        /* Общие стили кнопок */
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            text-align: center;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            min-width: 160px;
+        }
+
+        .btn-primary {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-secondary {
+            background: #2196F3;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #1976D2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-outline:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-page2 {
+            background: #FF6B6B;
+            color: white;
+        }
+
+        .btn-page2:hover {
+            background: #FF5252;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        /* Кнопки домов */
+        .btn-house {
+            background: white;
+            border: none;
+            border-radius: 15px;
+            padding: 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            overflow: hidden;
+            position: relative;
+            width: 100%;
+            min-height: 250px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .btn-house:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
+        .btn-house img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-house:hover img {
+            transform: scale(1.05);
+        }
+
+        .btn-house::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.7));
+        }
+
+        .house-title {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: white;
+            font-size: 1.3rem;
+            font-weight: bold;
+            z-index: 2;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+            padding: 0 15px;
+        }
+
+        .user-welcome {
+            text-align: center;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .user-welcome p {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        /* Стили для плашек */
+        .plashka {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 0;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            z-index: 1000;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            width: 90%;
+        }
+
+        .plashka-header {
+            position: relative;
+            height: 300px;
+            overflow: hidden;
+        }
+
+        .plashka-header img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .plashka-title {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+            padding: 30px 30px 20px;
+        }
+
+        .plashka-title h2 {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .plashka-title .address {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .plashka-content {
+            padding: 30px;
+        }
+
+        .content-section {
+            margin-bottom: 25px;
+        }
+
+        .content-section h3 {
+            color: #333;
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 5px;
+        }
+
+        .content-section p {
+            color: #555;
+            line-height: 1.7;
+            font-size: 1rem;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 999;
+            backdrop-filter: blur(5px);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            cursor: pointer;
+            font-size: 30px;
+            background: rgba(255,255,255,0.9);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .close-btn:hover {
+            background: white;
+            transform: scale(1.1);
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .info-box h3 {
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        /* Стилизация скроллбара */
+        .plashka::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .plashka::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 0 0 20px 0;
+        }
+
+        .plashka::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 4px;
+        }
+
+        .plashka::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
+
+        .simple-hero {
+            background:
+                linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                url('https://sun9-18.userapi.com/s/v1/ig2/kPKnWEfqBDqGS7YvMhkDsWs26-1U8Xia2hWz4VoKRAZRXWKBz8Z1mea2csdPwtKd6NyU14mdjtiDh8x8KlEAn3gR.jpg?quality=95&as=32x14,48x21,72x32,108x48,160x71,240x107,360x161,480x214,540x241,640x286,720x322,1080x483,1280x572,1440x643,2560x1144&from=bu&cs=2560x0');
+            background-size: cover;
+            background-position: center;
+            padding: 100px 20px;
+            text-align: center;
+            color: white;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+
+        .simple-hero h2 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.8);
+        }
+
+        .simple-hero p {
+            font-size: 1.4rem;
+            opacity: 0.95;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
+        }
+
+        @media (max-width: 1200px) {
+            .houses-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 992px) {
+            .how-it-works-images img {
+                width: 180px;
+                height: 135px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-block h1 {
+                font-size: 2.2rem;
+            }
+
+            .header-block p {
+                font-size: 1.1rem;
+            }
+
+            .welcome-block {
+                padding: 25px;
+            }
+
+            .welcome-header h2 {
+                font-size: 1.8rem;
+            }
+
+            .houses-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .how-it-works-images {
+                gap: 15px;
+            }
+
+            .how-it-works-images img {
+                width: 160px;
+                height: 120px;
+            }
+
+            .btn-house img {
+                height: 200px;
+            }
+
+            .house-title {
+                font-size: 1.2rem;
+            }
+
+            .auth-buttons,
+            .nav-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 200px;
+            }
+
+            .plashka {
+                width: 95%;
+            }
+
+            .plashka-title h2 {
+                font-size: 1.5rem;
+            }
+
+            .simple-hero h2 {
+                font-size: 2.2rem;
+            }
+
+            .simple-hero p {
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .how-it-works-images {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+
+            .how-it-works-images img {
+                width: 200px;
+                height: 150px;
+            }
+
+            .houses-header h3 {
+                font-size: 1.6rem;
+            }
+
+            .btn-house {
+                min-height: 180px;
+            }
+
+            .btn-house img {
+                height: 180px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+
+
+        <!-- БЛОК 2: ДОБРО ПОЖАЛОВАТЬ -->
+        <div class="welcome-block">
+            <div class="simple-hero">
+                <h2>Откройте Иваново по-новому!</h2>
+                <p class="subtitle">интерактивные маршруты для туристов</p>
+            </div>
+
+            <div class="auth-block">
+                <p>Исследуй город через тематические маршруты — от арт-объектов до исторических зданий.</p>
+                <p>Играй, отмечай пройденные точки, общайся с ИИ-гидом!</p>
+            </div>
+
+            <!-- Блок авторизации -->
+            <div class="auth-block">
+                {% if not session.user_id %}
+                    <div class="auth-buttons">
+                        <a href="{{ url_for('register') }}" class="btn btn-primary">Зарегистрироваться</a>
+                        <a href="{{ url_for('login') }}" class="btn btn-secondary">Войти</a>
+                    </div>
+                {% else %}
+                    <div class="user-welcome">
+                        <p>Рады видеть вас, {{ session.username }}!</p>
+                        <a href="{{ url_for('profile') }}" class="btn btn-outline">Перейти в профиль</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- БЛОК "КАК ЭТО РАБОТАЕТ?" -->
+
+        <!-- БЛОК 3: ОДИН БЛОК С 4 КНОПКАМИ -->
+        <div class="houses-block">
+            <div class="houses-header">
+                <h3>Популярные маршруты</h3>
+            </div>
+
+            <div class="houses-grid">
+                <!-- Кнопка "Дом-птица" теперь ведет на page2 -->
+                <a href="{{ url_for('page2') }}" class="btn-house" style="text-decoration: none; display: block;">
+                    <img src="https://sun9-39.userapi.com/s/v1/ig2/ATzL4o5X1NJGWzCDPs8PDy0d9AvcLnmGiHaMOtTc7ml-cqoWrOEYb1-WeID7A3ByhyfZlRuPwWYMKgWIQia4n9XD.jpg?quality=95&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360,480x480,540x540,640x640,720x720,1080x1080,1280x1280,1440x1440,2560x2560&from=bu&cs=2560x0" alt="Дом-птица">
+                    <div class="house-title">Дома-Метафоры</div>
+                </a>
+
+                <!-- Остальные кнопки открывают плашки -->
+                 <a href="{{ url_for('page3') }}" class="btn-house" style="text-decoration: none; display: block;">
+                    <img src="https://sun9-78.userapi.com/s/v1/ig2/pv5veTfTOpOadDuUqCQrhdh1FfPiiimQSvsVKahQSwNYXvPoeThzOmLnb4f4lG-WBbxjbOWbjNDvu0g9M5Ko21sp.jpg?quality=95&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360,480x480,540x540,640x640,720x720,1080x1080,1280x1280,1440x1441,2559x2560&from=bu&cs=2559x0" alt="Дом-подкова">
+                    <div class="house-title">Арт-объекты</div>
+                </a>
+
+                <button onclick="showPlashka('plashka3')" class="btn-house">
+                    <img src="https://sun9-63.userapi.com/s/v1/ig2/9jwrS5mdY2wVe_8VLwaQszHUK0temySYFIBgF65ZlKXrQfpFu_f2EHiUREq2y0U-ZbDDTDCQq2FAoDcqwb6yfXC4.jpg?quality=95&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360,480x480,540x540,640x640,720x720,1080x1080,1280x1280,1440x1441,2559x2560&from=bu&cs=2559x0" alt="Дом-корабль">
+                    <div class="house-title">Музеи</div>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="welcome-block">
+            <div class="houses-header">
+                <h3>Как это работает?</h3>
+                <p>Четыре простых шага для знакомства с архитектурой Иваново</p>
+            </div>
+
+            <div class="how-it-works-images">
+                <img src="https://sun9-11.userapi.com/s/v1/ig2/OEJHyvXxtSYNdsQ8eoq65RxzAL8hsE0Mwp-EOcuCyave7yTW7eXPOaMP-eKlwfzJ7ogd-Io3tIB0mRYXkR-QHt1R.jpg?quality=95&as=32x32,48x48,72x72,108x108,160x160,240x240,360x361,480x481,540x541,588x589&from=bu&cs=588x0"
+                     alt="Шаг 1: Найдите памятник">
+                <img src="https://sun9-28.userapi.com/s/v1/ig2/B3tggd02nnwfaye5s6HjRR3fQ0J1-o2boTeNBhdtleAVdlXVLqC8g2dnRhttIrKpii07UNKwnd433dN6Y2QDpVmt.jpg?quality=95&as=32x32,48x48,72x72,108x108,160x160,240x240,360x361,480x481,540x541,588x589&from=bu&cs=588x0"
+                     alt="Шаг 2: Изучите историю">
+                <img src="https://sun9-38.userapi.com/s/v1/ig2/oFS5ucOjezuMGNQHSyu_a59Lxbbx8cBh-ybP28RNfP2ajgJHxmpL33mXSk215iRB_k-vEDoPDxKZRCXcorWgOPlL.jpg?quality=95&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360,480x480,540x540,589x589&from=bu&cs=589x0"
+                     alt="Шаг 3: Посетите лично">
+                <img src="https://sun9-37.userapi.com/s/v1/ig2/Fe4ZEgj8VH-hAPn7GArhiYU1NatnG-S-_26dGtzLEYOtP5sy0V725_wr372EWZeAtl_SBEJIqfZ1ojEJLGDrQGcY.jpg?quality=95&as=32x32,48x48,72x72,108x108,160x160,240x240,360x361,480x481,540x541,588x589&from=bu&cs=588x0"
+                     alt="Шаг 4: Поделитесь впечатлениями">
+            </div>
+
+        </div>
+    <div class="welcome-block">
+        <div class="houses-header">
+                    <h3>ИИ-ЧАТ</h3>
+                    <p>Нужна помощь? Спроси у ИИ-гида!
+    Задай вопрос о маршрутах, истории или локациях — ответ придет за секунды.</p>
+                </div>
+    </div>
+    <script>
+        function showPlashka(plashkaId) {
+            hideAllPlashkas();
+            document.getElementById(plashkaId).style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function hideAllPlashkas() {
+            const plashkas = document.querySelectorAll('.plashka');
+            plashkas.forEach(plashka => {
+                plashka.style.display = 'none';
+            });
+            document.getElementById('overlay').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                hideAllPlashkas();
+            }
+        });
+
+        document.querySelectorAll('.plashka').forEach(plashka => {
+            plashka.addEventListener('click', function(event) {
+                event.stopPropagation();
+            });
+        });
+    </script>
+</body>
+
+{% endblock %}
+</html>

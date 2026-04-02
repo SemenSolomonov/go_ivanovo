@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="ru">
+{% extends "base.html" %}
+
+{% block title %}Мой профиль{% endblock %}
+
+{% block content %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой профиль - Архитектурные памятники Иваново</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ИЗМЕНЕНИЕ: Белый фон страницы */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: white;
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #333;
+        }
+
+        .profile-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .profile-header h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .profile-header p {
+            color: #666;
+            font-size: 1.2rem;
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            text-align: center;
+            border: 2px solid #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.15);
+        }
+
+        .stat-card h3 {
+            color: #667eea;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .stat-card .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .progress-indicator {
+            margin-top: 15px;
+            height: 8px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .visited-list {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .visited-list h2 {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+            font-size: 1.8rem;
+        }
+
+        .monuments-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .monument-item {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s ease;
+            border: 1px solid #e0e0e0;
+        }
+
+        .monument-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border-color: #667eea;
+        }
+
+        .monument-item img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 2px solid white;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .monument-info {
+            flex: 1;
+        }
+
+        .monument-info h4 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-size: 1.2rem;
+        }
+
+        .monument-info p {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .visited-date {
+            font-size: 0.8rem;
+            color: #4CAF50;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .visited-date::before {
+            content: '✓';
+            font-size: 1rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 40px;
+            color: #666;
+            grid-column: 1 / -1;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-size: 1.5rem;
+        }
+
+        .empty-state p {
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            min-width: 160px;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+            box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: #5a67d8;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #4CAF50;
+            color: white;
+            box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: #43a047;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-logout {
+            background: #FF6B6B;
+            color: white;
+            box-shadow: 0 4px 10px rgba(255, 107, 107, 0.3);
+        }
+
+        .btn-logout:hover {
+            background: #ff5252;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .user-info {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .user-info p {
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        .user-info strong {
+            color: #2c3e50;
+        }
+
+        @media (max-width: 768px) {
+            .profile-container {
+                padding: 25px;
+            }
+
+            .profile-header h1 {
+                font-size: 2rem;
+            }
+
+            .stats-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .monuments-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 250px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 20px 10px;
+            }
+
+            .profile-container {
+                padding: 20px;
+            }
+
+            .stat-card {
+                padding: 20px;
+            }
+
+            .stat-card .stat-number {
+                font-size: 2rem;
+            }
+
+            .monument-item {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .monument-item img {
+                width: 100px;
+                height: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <div class="profile-header">
+            <h1>👤 Мой профиль</h1>
+            <p>Добро пожаловать, {{ session.username }}!</p>
+        </div>
+
+        <div class="user-info">
+            <p><strong>Имя пользователя:</strong> {{ session.username }}</p>
+            <p><strong>ID пользователя:</strong> {{ session.user_id }}</p>
+        </div>
+
+        <div class="stats-cards">
+            <div class="stat-card">
+                <h3>Посещено точек</h3>
+                <div class="stat-number" id="visited-count">0</div>
+                <div class="progress-indicator">
+                    <div class="progress-bar" id="progress-bar"></div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <h3>Всего точек</h3>
+                <div class="stat-number">23</div>
+            </div>
+
+            <div class="stat-card">
+                <h3>Процент посещения</h3>
+                <div class="stat-number" id="progress-percent">0%</div>
+            </div>
+        </div>
+
+        <div class="visited-list">
+            <h2>✅ Посещённые достопримечательности</h2>
+            <div id="visited-monuments" class="monuments-grid">
+                <!-- Здесь будут динамически добавляться посещённые памятники -->
+                <div class="empty-state">
+                    <h3>Вы ещё не отметили ни одного памятника</h3>
+                    <p>Начните исследовать архитектуру Иваново и отмечайте посещённые места!</p>
+                    <div class="action-buttons">
+                        <a href="{{ url_for('index') }}" class="btn btn-primary">Начать осмотр памятников</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <a href="{{ url_for('index') }}" class="btn btn-primary">На главную</a>
+            {% if session.user_id %}
+                <a href="{{ url_for('logout') }}" class="btn btn-logout">Выйти из аккаунта</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        // Данные о памятниках
+        const monuments = {
+            '1': {
+                name: "Дом-птица",
+                address: "пр. Ленина, 53",
+                img: "https://extraguide.ru/images/blog/2023/01-14-4t0uje-dom-ptitsa.jpg"
+            },
+            '2': {
+                name: "Дом-подкова",
+                address: "ул. Громобоя, 13",
+                img: "https://avatars.dzeninfra.ru/get-zen_doc/4979934/pub_63245491b31f2035e8aa6f70_632454a9962ce87f2b60d26c/scale_1200"
+            },
+            '3': {
+                name: "Дом-корабль",
+                address: "проспект Ленина, 49",
+                img: "https://a.d-cd.net/_Qpo5woO4G1pv5UPJB6uAaHBKxI-1920.jpg"
+            },
+            '4': {
+                name: "Дом-пуля",
+                address: "проспект Ленина, 37",
+                img: "https://avatars.dzeninfra.ru/get-zen_doc/271828/pub_66bb52ded6f9cc628c20a63a_66bb5713979b573f13366e23/scale_1200"
+            },
+            '5': {
+                name: "Ёжик в тумане",
+                address: "парк имени В.Я. Степанова",
+                img: "https://parkstepanova.ru/wp-content/uploads/2024/11/UB4kdHXYLhQ.jpg"
+            },
+            '6': {
+                name: "Пальцы",
+                address: "проспект Ленина, около дома 47",
+                img: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/29/b4/3f/fc/caption.jpg?w=1000&h=-1&s=1"
+            },
+            '7': {
+                name: "Аллея любви",
+                address: "",
+                img: "https://sun9-7.userapi.com/s/v1/ig2/8dP2QM53Q1LJzjuNrjNmYuD27raDr9WLEum_ITjJPLY1lMIdcToT6Bx8SFtowPv1yqkauxMJtzeTwxgLo5K9KeUl.jpg?quality=95&as=32x21,48x32,72x48,108x72,160x107,240x160,360x240,480x320,540x360,640x427,720x480,1080x721,1280x854,1400x934&from=bu&cs=1400x0"
+            },
+            '8': {
+                name: "Верность",
+                address: "",
+                img: "https://sun9-54.userapi.com/s/v1/ig2/XU_tq774pXKCeGQ3UItQv2ktkX4AL2B-c0UBNg9cq0vg25WfLuY5xAf9WEp-bxOs4lcbyheFQlLYyW-t1bOd54A-.jpg?quality=95&as=32x21,48x32,72x48,108x72,160x107,240x160,360x240,480x320,540x360,640x427,720x480,1080x720,1280x853,1440x960,2000x1333&from=bu&cs=2000x0"
+            },
+            '9': {
+                name: "Молекула",
+                address: "",
+                img: "https://i3vestno.ru/images/2021/09/14/a43eeed5245743ce814a25bf42406c17.jpg"
+            },
+            '10': {
+                name: "Волк с телёнком",
+                address: "",
+                img: "https://avatars.mds.yandex.net/get-altay/1371862/2a00000165c95bf333f6130bb98bff6b36d1/L_height"
+            },
+            '11': {
+                name: "Акула пера",
+                address: "",
+                img: "https://sun9-52.userapi.com/s/v1/ig2/EhQBUMVSsUwnxgRmv4rOWozM8L_JkyuJF9dEOffWJbjfFktbazBPiSx2MLVopKwj5GS8iQqZDt4CUSpKcPzHKfgh.jpg?quality=95&as=32x24,48x36,72x54,108x81,160x120,240x180,360x270,480x360,540x405,640x480,720x540,1024x768&from=bu&cs=1024x0"
+            },
+            '12': {
+                name: "Прялка",
+                address: "",
+                img: "https://ivgazeta.ru/images/2017/08/31/6844df7f978d497bbcc48fa54cb6f0d1.jpg"
+            },
+            '13': {
+                name: "Такса",
+                address: "",
+                img: "https://sun9-88.userapi.com/s/v1/ig2/eEAGgoFZNlwxiRwXiBQN-KmaVrTe0YZtlCmYm7jTuJ4NltzT7A4i8HlA0JYphCDVSeb5BuTJNIWj_0AGi0qL4Ctx.jpg?quality=95&as=32x24,48x36,72x54,108x81,160x120,240x180,360x270,480x360,540x405,640x480,720x540,1024x768&from=bu&cs=1024x0"
+            },
+            '14': {
+                name: "Первый стоматолог",
+                address: "",
+                img: "https://vtrip.ru/uploads/russia/ivanovo/pervyistomatolog2.jpg"
+            },
+            '15': {
+                name: "Ивановский областной художественный музей",
+                address: "",
+                img: "https://sun9-65.userapi.com/s/v1/ig2/kV3yno95OdEPoAOkptMrcKfy4htKDuuOmIRYrFqdVwmD5AOARBp_7gIyhXvjjJK3pxd3DMNvwYaeWcZpOnwiZ0lm.jpg?quality=95&as=32x24,48x36,72x54,108x81,160x120,240x180,360x270,480x360,540x405,640x480,720x540,1080x810,1280x960,1440x1080,2048x1536&from=bu&cs=2048x0"
+            },
+            '16': {
+                name: "Музей ивановского ситца",
+                address: "",
+                img: "https://sun9-31.userapi.com/s/v1/ig2/Ml1W261utQDCdQ1N7IZ96uh7xrFspOuJxF_Kl0OucF6VpdXFubhFUBTMjEnM_99M4nPKopHr4tev__77gsufdvCG.jpg?quality=95&as=32x21,48x32,72x48,108x72,160x107,240x160,360x240,480x320,540x360,640x427,720x480,1080x720,1280x854,1440x960,2000x1334&from=bu&cs=2000x0"
+            },
+            '17': {
+                name: "Музей промышленности и искусства",
+                address: "",
+                img: "https://vk.com/photo-235214822_456239059"
+            },
+            '18': {
+                name: "Музей советского автопрома",
+                address: "",
+                img: "https://sun9-79.userapi.com/s/v1/ig2/aD_7O-pB1G2kbuQQLMnI4UNkTCLTiNs4PQhE08P5pO_7-nw9fQfWK6GOS_1Gr-hVaoRu8oTG-z_6VzNdtFKW1n-h.jpg?quality=95&as=32x24,48x36,72x54,108x81,160x120,240x180,360x270,480x360,540x405,640x480,720x540,960x720&from=bu&cs=960x0"
+            },
+            '19': {
+                name: "Музейно-выставочный центр",
+                address: "",
+                img: "https://sun9-59.userapi.com/s/v1/ig2/eRCz5F9js_c4uQKFMVo29aX9HgY4udak19pr8LvI7BH6spbMtnl59PonsvWnr-Yf3pmNCAFLfLiwMjSQKY3TXNcW.jpg?quality=95&as=32x21,48x32,72x48,108x72,160x107,240x160,360x240,480x320,540x360,640x426,720x480,1080x720,1280x853,1440x960,2560x1706&from=bu&cs=2560x0"
+            },
+            '20': {
+                name: "Музей первого Совета",
+                address: "",
+                img: "https://sun9-78.userapi.com/s/v1/ig2/0eFqDMH_XcLiDuhMFhxLYNaNh4G6lRRrNChM19II5_fAjZmp-hfmnO-g9176WxDH7Ur99ZXb11Vo6Iv3uB9qG4cQ.jpg?quality=95&as=32x24,48x36,72x54,108x81,160x120,240x180,360x270,480x360,540x405,640x480,720x540,1080x810,1280x960,1440x1080,2560x1920&from=bu&cs=2560x0"
+            },
+            '21': {
+                name: "Дом-музей семьи Бубновых",
+                address: "",
+                img: "https://sun9-24.userapi.com/s/v1/ig2/E7yckaOZNh7WMCnhkiTXYbCyh4QTYUURlwskBFr3uJYeQp24wy6nXuFrHLPBaIpOXPdjT864QL3e5ec_Ou6clIgX.jpg?quality=95&as=32x24,48x36,72x54,108x81,160x120,240x180,360x270,480x360,540x405,640x480,720x540,1080x810,1280x960,1440x1080,2200x1650&from=bu&cs=2200x0"
+            },
+            '22': {
+                name: "Музей сыра",
+                address: "",
+                img: "https://sun9-19.userapi.com/s/v1/ig2/kKGB_KUNf30ckQqsjf2R4g5IZq19g691tfPBa7VQcLiMIQfDs0QqMB5Ni_bPCsJ6kDUbuO5wxuaomPZAo8BOxCS8.jpg?quality=95&as=32x20,48x30,72x44,108x66,160x98,240x148,360x222,480x295,540x332,640x394,720x443,1080x665,1280x788,1440x886,2560x1576&from=bu&cs=2560x0"
+            },
+            '23': {
+                name: "Щудровская палатка",
+                address: "",
+                img: "https://sun9-2.userapi.com/s/v1/ig2/0pYJq9JJ29LLKSX69B9_1DJI9-3_j2Lsa9kUafQuk4EVRjs8s65eYUakG7QbcVKO_d-5jl8cR_2oVK_FEgOd0crn.jpg?quality=95&as=32x21,48x32,72x48,108x72,160x107,240x161,360x241,480x321,540x362,640x428,720x482,1080x723,1280x857,1440x964,2560x1714&from=bu&cs=2560x0"
+            }
+        };
+
+        // Функция обновления профиля
+        function updateProfileVisits() {
+            const visitedPlaces = JSON.parse(localStorage.getItem('visited_places') || '[]');
+            const visitedCount = visitedPlaces.length;
+            const totalPlaces = 23;
+            const progressPercent = Math.round((visitedCount / totalPlaces) * 100);
+
+            // Обновляем статистику
+            document.getElementById('visited-count').textContent = visitedCount;
+            document.getElementById('progress-percent').textContent = progressPercent + '%';
+
+            // Обновляем прогресс-бар
+            const progressBar = document.getElementById('progress-bar');
+            progressBar.style.width = progressPercent + '%';
+
+            // Обновляем список
+            const visitedList = document.getElementById('visited-monuments');
+            visitedList.innerHTML = '';
+
+            if (visitedCount === 0) {
+                visitedList.innerHTML = `
+                    <div class="empty-state">
+                        <h3>Вы ещё не отметили ни одного памятника</h3>
+                        <p>Начните исследовать архитектуру Иваново и отмечайте посещённые места!</p>
+                        <div class="action-buttons">
+                            <a href="{{ url_for('index') }}" class="btn btn-primary">Начать осмотр памятников</a>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            visitedPlaces.forEach(placeId => {
+                const monument = monuments[placeId];
+                if (monument) {
+                    const item = document.createElement('div');
+                    item.className = 'monument-item';
+                    item.innerHTML = `
+                        <img src="${monument.img}" alt="${monument.name}">
+                        <div class="monument-info">
+                            <h4>${monument.name}</h4>
+                            <p>${monument.address}</p>
+                            <div class="visited-date">Посещено: сегодня</div>
+                        </div>
+                    `;
+                    visitedList.appendChild(item);
+                }
+            });
+        }
+
+        // Загрузка при открытии страницы
+        document.addEventListener('DOMContentLoaded', updateProfileVisits);
+
+        // Экспортируем функцию для обновления из других страниц
+        window.updateProfileVisits = updateProfileVisits;
+    </script>
+</body>
+
+{% endblock %}
+</html>
