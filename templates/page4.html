@@ -1,0 +1,1408 @@
+<!DOCTYPE html>
+<html lang="ru">
+{% extends "base.html" %}
+
+{% block title %}Музеи Иваново - Архитектурные памятники Иваново{% endblock %}
+
+{% block content %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Музеи Иваново - Архитектурные памятники Иваново</title>
+    <style>
+        /* ========== CSS ПЕРЕМЕННЫЕ ========== */
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5a67d8;
+            --secondary: #764ba2;
+            --success: #4CAF50;
+            --success-dark: #2E7D32;
+            --info: #2196F3;
+            --danger: #FF6B6B;
+            --danger-dark: #FF5252;
+            --text-dark: #2c3e50;
+            --text-light: #666;
+            --text-muted: #555;
+            --bg-light: #f8f9fa;
+            --white: #ffffff;
+            --border: #e0e0e0;
+            --shadow-sm: 0 5px 20px rgba(0,0,0,0.1);
+            --shadow-md: 0 8px 25px rgba(0,0,0,0.15);
+            --shadow-lg: 0 15px 35px rgba(0,0,0,0.2);
+            --radius-sm: 8px;
+            --radius-md: 15px;
+            --radius-lg: 20px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--white);
+            min-height: 100vh;
+            padding: clamp(15px, 4vw, 40px) clamp(10px, 3vw, 20px);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: clamp(20px, 4vw, 30px);
+        }
+
+        /* ========== ТИПОГРАФИКА ========== */
+        h1 { font-size: clamp(1.8rem, 5vw, 2.5rem); }
+        h2 { font-size: clamp(1.5rem, 4vw, 2rem); }
+        h3 { font-size: clamp(1.2rem, 3vw, 1.8rem); }
+        p { font-size: clamp(0.95rem, 2vw, 1.1rem); }
+
+        /* ========== ЗАГОЛОВОЧНЫЙ БЛОК ========== */
+        .header-block {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: clamp(20px, 5vw, 40px) clamp(20px, 4vw, 30px);
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            width: 100%;
+        }
+
+        .header-block h1 {
+            color: var(--text-dark);
+            text-align: center;
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .intro-text {
+            font-size: clamp(1rem, 2.5vw, 1.1rem);
+            line-height: 1.7;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            text-align: justify;
+        }
+
+        .route-guide-title {
+            color: var(--text-dark);
+            font-size: clamp(1.4rem, 3.5vw, 1.8rem);
+            margin: 30px 0 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .instructions-list {
+            background: var(--bg-light);
+            border-radius: var(--radius-md);
+            padding: clamp(15px, 4vw, 25px);
+            margin-bottom: 30px;
+            border: 1px solid var(--border);
+        }
+
+        .instruction-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .instruction-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .instruction-number {
+            background: var(--primary);
+            color: var(--white);
+            width: clamp(25px, 5vw, 30px);
+            height: clamp(25px, 5vw, 30px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+            font-size: clamp(0.9rem, 2vw, 1rem);
+        }
+
+        .instruction-text {
+            font-size: clamp(0.95rem, 2vw, 1.1rem);
+            color: var(--text-dark);
+            line-height: 1.5;
+            flex: 1;
+        }
+
+        .tip-section {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border-left: 4px solid var(--primary);
+            padding: 15px 20px;
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            margin: 25px 0 15px;
+        }
+
+        .tip-title {
+            color: var(--text-dark);
+            font-size: clamp(1.2rem, 3vw, 1.4rem);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tip-title::before {
+            content: '💡';
+            font-size: 1.2rem;
+        }
+
+        .tip-text {
+            font-size: clamp(0.95rem, 2vw, 1.1rem);
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* Кнопка скачивания */
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--primary);
+            color: var(--white);
+            padding: clamp(10px, 2vw, 12px) clamp(20px, 4vw, 25px);
+            border-radius: var(--radius-sm);
+            text-decoration: none;
+            font-weight: bold;
+            transition: var(--transition);
+            margin: 20px 0;
+            border: none;
+            cursor: pointer;
+        }
+
+        .download-btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-icon {
+            font-size: 1.2rem;
+        }
+
+        /* ========== БЛОКИ С КАРТАМИ ========== */
+        .houses-block {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: clamp(20px, 5vw, 35px);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            width: 100%;
+        }
+
+        .houses-header {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .houses-header h3 {
+            color: var(--text-dark);
+            margin-bottom: 5px;
+        }
+
+        .houses-header p {
+            color: var(--text-light);
+            font-size: clamp(0.9rem, 2vw, 1rem);
+        }
+
+        /* Сетка для карты и кнопки */
+        .houses-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: clamp(15px, 3vw, 30px);
+            align-items: stretch;
+        }
+
+        /* ========== КНОПКИ-КАРТОЧКИ ========== */
+        .btn-house {
+            background: var(--white);
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 0;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            position: relative;
+            width: 100%;
+            height: 100%;
+            min-height: 350px;
+            display: block;
+            text-decoration: none;
+        }
+
+        .btn-house:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-house img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+            display: block;
+        }
+
+        .btn-house:hover img {
+            transform: scale(1.05);
+        }
+
+        .btn-house::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            pointer-events: none;
+        }
+
+        .house-title {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: var(--white);
+            font-size: clamp(1.1rem, 3vw, 1.3rem);
+            font-weight: bold;
+            z-index: 2;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            padding: 0 15px;
+            line-height: 1.3;
+        }
+
+        /* ========== КОНТЕЙНЕРЫ ДЛЯ КАРТ ========== */
+        .map-container {
+            width: 100%;
+            height: 100%;
+            min-height: 350px;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            background: var(--bg-light);
+            position: relative;
+        }
+
+        .map-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        /* ========== БЕЙДЖИ ПОСЕЩЕНИЙ ========== */
+        .visit-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            z-index: 10;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .visit-badge.visible {
+            opacity: 1;
+        }
+
+        .btn-house:hover .visit-badge {
+            transform: scale(1.1);
+        }
+
+        /* ========== ПЛАШКИ (МОДАЛЬНЫЕ ОКНА) ========== */
+        .plashka {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            z-index: 1000;
+            max-width: min(900px, 95%);
+            max-height: 90vh;
+            overflow-y: auto;
+            width: 95%;
+        }
+
+        .plashka-header {
+            position: relative;
+            height: clamp(200px, 40vh, 300px);
+            overflow: hidden;
+        }
+
+        .plashka-header img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .plashka-title {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
+            color: var(--white);
+            padding: clamp(15px, 4vw, 30px) clamp(15px, 4vw, 30px) clamp(10px, 3vw, 20px);
+        }
+
+        .plashka-title h2 {
+            font-size: clamp(1.3rem, 5vw, 2rem);
+            margin-bottom: 5px;
+        }
+
+        .plashka-title .address {
+            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+            opacity: 0.9;
+        }
+
+        .plashka-content {
+            padding: clamp(15px, 4vw, 30px);
+        }
+
+        .content-section {
+            margin-bottom: clamp(15px, 3vw, 25px);
+        }
+
+        .content-section h3 {
+            color: var(--text-dark);
+            font-size: clamp(1.1rem, 3vw, 1.4rem);
+            margin-bottom: 10px;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 5px;
+        }
+
+        .content-section p {
+            color: var(--text-muted);
+            line-height: 1.7;
+            font-size: clamp(0.9rem, 2vw, 1rem);
+            margin-bottom: 10px;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 999;
+            backdrop-filter: blur(5px);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: clamp(10px, 3vw, 15px);
+            right: clamp(10px, 3vw, 15px);
+            cursor: pointer;
+            font-size: clamp(24px, 6vw, 30px);
+            background: rgba(255,255,255,0.95);
+            border: none;
+            border-radius: 50%;
+            width: clamp(40px, 10vw, 50px);
+            height: clamp(40px, 10vw, 50px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+            transition: var(--transition);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            color: var(--text-dark);
+            font-weight: bold;
+        }
+
+        .close-btn:hover {
+            background: var(--white);
+            transform: scale(1.1);
+        }
+
+        /* ========== КОНТРОЛЫ ПОСЕЩЕНИЙ ========== */
+        .visit-control {
+            margin: 20px 0 0;
+            padding: 20px;
+            background: var(--bg-light);
+            border-radius: var(--radius-md);
+            text-align: center;
+            border-top: 1px solid var(--border);
+        }
+
+        .btn-visit {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--white);
+            border: none;
+            padding: clamp(10px, 2vw, 12px) clamp(20px, 4vw, 30px);
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: clamp(0.9rem, 2vw, 1rem);
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+        }
+
+        .btn-visit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-visit.visited {
+            background: linear-gradient(135deg, var(--success), var(--success-dark));
+        }
+
+        .visit-icon {
+            font-size: 1.2rem;
+        }
+
+        .visit-stats {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .visit-count {
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        /* ========== СКРОЛЛБАР ========== */
+        .plashka::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .plashka::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 0 0 20px 0;
+        }
+
+        .plashka::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        .plashka::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary);
+        }
+
+        /* ========== АДАПТАЦИЯ ========== */
+
+        /* Планшеты */
+        @media (max-width: 992px) {
+            .houses-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .map-container {
+                order: 2;
+            }
+
+            .btn-house {
+                order: 1;
+                max-width: 500px;
+                margin: 0 auto;
+            }
+
+            .btn-house, .map-container {
+                min-height: 300px;
+            }
+        }
+
+        /* Телефоны */
+        @media (max-width: 768px) {
+            .instruction-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .instruction-number {
+                margin-bottom: 5px;
+            }
+
+            .btn-house, .map-container {
+                min-height: 250px;
+            }
+
+            .visit-badge {
+                width: 35px;
+                height: 35px;
+                font-size: 1.2rem;
+            }
+        }
+
+        /* Маленькие телефоны */
+        @media (max-width: 576px) {
+            .header-block {
+                padding: 15px;
+            }
+
+            .btn-house, .map-container {
+                min-height: 200px;
+            }
+
+            .house-title {
+                font-size: 1rem;
+                bottom: 15px;
+            }
+
+            .plashka-header {
+                height: 180px;
+            }
+        }
+
+        /* Очень маленькие телефоны */
+        @media (max-width: 360px) {
+            .house-title {
+                font-size: 0.9rem;
+                bottom: 10px;
+            }
+
+            .btn-house::after {
+                height: 50px;
+            }
+        }
+
+        /* Ландшафтная ориентация */
+        @media (max-height: 600px) and (orientation: landscape) {
+            .plashka {
+                max-height: 85vh;
+            }
+
+            .plashka-header {
+                height: 150px;
+            }
+        }
+
+        /* Touch-устройства */
+        @media (hover: none) and (pointer: coarse) {
+            .btn-house:hover {
+                transform: none;
+            }
+
+            .btn-house:active {
+                transform: translateY(-3px);
+            }
+
+            .btn-house:hover img {
+                transform: none;
+            }
+
+            .btn-house:active img {
+                transform: scale(1.05);
+            }
+        }
+
+        /* Уменьшение анимации */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- БЛОК 1: ЗАГОЛОВОК И ИНСТРУКЦИЯ -->
+        <div class="header-block">
+            <h1>Музеи Иваново</h1>
+            <p class="intro-text">Иваново — это не только фабрики и авангардная архитектура, но и богатая музейная палитра. Этот маршрут откроет вам двери в прошлое и настоящее города через его главные хранилища памяти: от классических краеведческих экспозиций до экспериментальных выставочных пространств.</p>
+
+            <p class="intro-text">Вы познакомитесь с музеями, где оживает история края с древнейших времён, представлены свидетельства купеческого и фабричного расцвета Иваново-Вознесенска, хранятся узоры знаменитого ситца и уникальные произведения искусства. Каждый музей — это капсула времени, где предметы, документы и интерьеры рассказывают о людях, событиях и ремёслах, сформировавших облик города.</p>
+
+            <h2 class="route-guide-title">Как проходить маршрут</h2>
+
+            <div class="instructions-list">
+                <div class="instruction-item">
+                    <div class="instruction-number">1</div>
+                    <div class="instruction-text">Планируйте визит заранее: уточните часы работы и наличие экскурсий (в карточке музея);</div>
+                </div>
+                <div class="instruction-item">
+                    <div class="instruction-number">2</div>
+                    <div class="instruction-text">Выбирайте темы, которые вам особенно интересны (история, текстиль, искусство);</div>
+                </div>
+                <div class="instruction-item">
+                    <div class="instruction-number">3</div>
+                    <div class="instruction-text">Используйте сайты музеев для актуальной информации или покупки билетов онлайн;</div>
+                </div>
+                <div class="instruction-item">
+                    <div class="instruction-number">4</div>
+                    <div class="instruction-text">Отмечайте посещённые музеи в профиле, чтобы собрать полную коллекцию.</div>
+                </div>
+            </div>
+
+            <div class="tip-section">
+                <h3 class="tip-title">Совет</h3>
+                <p class="tip-text">Возьмите с собой блокнот или используйте заметки в смартфоне — так вы сможете записывать самые интересные факты и впечатления. А если планируете посетить несколько музеев за день, позаботьтесь об удобной обуви: многие экспозиции занимают большие пространства и предполагают долгую ходьбу.</p>
+            </div>
+
+            <p>Во избежание проблем с интернетом, вы можете скачать маршрут в формате .pdf по ссылке ниже</p>
+            <a href="https://disk.yandex.ru/i/FY5oWq7-4yqH0A" class="download-btn">
+                <span class="btn-icon">📥</span>
+                Скачать маршрут
+            </a>
+        </div>
+
+        <!-- Общая карта маршрута -->
+        <div class="welcome-block">
+            <div class="houses-header">
+                <h3>Карта маршрута</h3>
+                <p>Все музеи на одной карте</p>
+            </div>
+            <div class="map-container" style="min-height: 400px;">
+                <script type="text/javascript" charset="utf-8" async src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3A635ac6879a4a5194bc9ff49f688c45fbfaaeef6c33d93f19cbeaa1610c541024&amp;width=100%25&amp;height=100%25&amp;lang=ru_RU&amp;scroll=true"></script>
+            </div>
+        </div>
+
+        <!-- Ивановский областной художественный музей -->
+        <div class="houses-block">
+            <div class="houses-header">
+                <h3>Ивановский областной художественный музей</h3>
+                <p>Адрес: пр. Ленина, 33</p>
+            </div>
+            <div class="houses-grid">
+                <button onclick="showPlashka('plashka2')" class="btn-house">
+                    <div class="visit-badge" id="badge-1">✓</div>
+                    <img src="https://sun9-65.userapi.com/s/v1/ig2/kV3yno95OdEPoAOkptMrcKfy4htKDuuOmIRYrFqdVwmD5AOARBp_7gIyhXvjjJK3pxd3DMNvwYaeWcZpOnwiZ0lm.jpg?quality=95&as=32x24,48x36,72x54,108x81,160x120,240x180,360x270,480x360,540x405,640x480,720x540,1080x810,1280x960,1440x1080,2048x1536&from=bu&cs=2048x0"
+                         alt="Ивановский областной художественный музей"
+                         loading="lazy">
+                    <div class="house-title">Художественный музей</div>
+                </button>
+                <div class="map-container">
+                    <script type="text/javascript" charset="utf-8" async
+                            src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3A0dfe006b52ca4bef5ab007a91e650f1c4188a0e12cf3385119db9ad313caca4f&amp;width=100%25&amp;height=100%25&amp;lang=ru_RU&amp;scroll=true"></script>
+                </div>
+            </div>
+        </div>
+
+        <!-- Музей ивановского ситца -->
+        <div class="houses-block">
+            <div class="houses-header">
+                <h3>Музей ивановского ситца</h3>
+                <p>Адрес: ул. Батурина, 11/42</p>
+            </div>
+            <div class="houses-grid">
+                <button onclick="showPlashka('plashka3')" class="btn-house">
+                    <div class="visit-badge" id="badge-2">✓</div>
+                    <img src="https://sun9-31.userapi.com/s/v1/ig2/Ml1W261utQDCdQ1N7IZ96uh7xrFspOuJxF_Kl0OucF6VpdXFubhFUBTMjEnM_99M4nPKopHr4tev__77gsufdvCG.jpg?quality=95&as=32x21,48x32,72x48,108x72,160x107,240x160,360x240,480x320,540x360,640x427,720x480,1080x720,1280x854,1440x960,2000x1334&from=bu&cs=2000x0"
+                         alt="Музей ивановского ситца"
+                         loading="lazy">
+                    <div class="house-title">Музей ивановского ситца</div>
+                </button>
+                <div class="map-container">
+                    <script type="text/javascript" charset="utf-8" async
+                            src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3A86e7afbdd92a7c73c0468485420166c5e9a8949d67d360fe4772ac5e43861a73&amp;width=100%25&amp;height=100%25&amp;lang=ru_RU&amp;scroll=true"></script>
+                </div>
+            </div>
+        </div>
+
+        <!-- Музей промышленности и искусства -->
+        <div class="houses-block">
+            <div class="houses-header">
+                <h3>Музей промышленности и искусства</h3>
+                <p>Адрес: ул. Батурина, 6/40</p>
+            </div>
+            <div class="houses-grid">
+                <button onclick="showPlashka('plashka4')" class="btn-house">
+                    <div class="visit-badge" id="badge-3">✓</div>
+                    <img src="https://sun9-78.userapi.com/s/v1/ig2/g2HnNrXn438E3T283dVQND6f-hCLL1XaX9OtNEpERVpSJkn8UH3blap0ycKlEiRqE0dhRtpDvU4elFvWGuGsVV8T.jpg?quality=95&as=32x24,48x36,72x54,108x81,160x120,240x180,360x270,480x360,540x405,640x480,720x540,1080x810,1280x960,1440x1080,2560x1920&from=bu&cs=2560x0"
+                         alt="Музей промышленности и искусства"
+                         loading="lazy">
+                    <div class="house-title">Музей промышленности</div>
+                </button>
+                <div class="map-container">
+                    <script type="text/javascript" charset="utf-8" async
+                            src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3A647772edf33df1e17d0ff0fe6e445d5abe8b78910d05582356f02bd80d557229&amp;width=100%25&amp;height=100%25&amp;lang=ru_RU&amp;scroll=true"></script>
+                </div>
+            </div>
+        </div>
+
+        <!-- Музей советского автопрома -->
+        <div class="houses-block">
+            <div class="houses-header">
+                <h3>Музей советского автопрома</h3>
+                <p>Адрес: ул. Парижской Коммуны, 16В</p>
+            </div>
+            <div class="houses-grid">
+                <button onclick="showPlashka('plashka5')" class="btn-house">
+                    <div class="visit-badge" id="badge-4">✓</div>
+                    <img src="https://sun9-79.userapi.com/s/v1/ig2/aD_7O-pB1G2kbuQQLMnI4UNkTCLTiNs4PQhE08P5pO_7-nw9fQfWK6GOS_1Gr-hVaoRu8oTG-z_6VzNdtFKW1n-h.jpg?quality=95&as=32x24,48x36,72x54,108x81,160x120,240x180,360x270,480x360,540x405,640x480,720x540,960x720&from=bu&cs=960x0"
+                         alt="Музей советского автопрома"
+                         loading="lazy">
+                    <div class="house-title">Музей автопрома</div>
+                </button>
+                <div class="map-container">
+                    <script type="text/javascript" charset="utf-8" async
+                            src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3A6e6572be52ad4f0076de29407c60f9b6b14938b2b20cb76d1d35cde807c7b57b&amp;width=100%25&amp;height=100%25&amp;lang=ru_RU&amp;scroll=true"></script>
+                </div>
+            </div>
+        </div>
+
+        <!-- Щудровская палатка -->
+        <div class="houses-block">
+            <div class="houses-header">
+                <h3>Щудровская палатка</h3>
+                <p>Адрес: ул. 10-го Августа, 36-а</p>
+            </div>
+            <div class="houses-grid">
+                <button onclick="showPlashka('plashka10')" class="btn-house">
+                    <div class="visit-badge" id="badge-5">✓</div>
+                    <img src="https://sun9-2.userapi.com/s/v1/ig2/0pYJq9JJ29LLKSX69B9_1DJI9-3_j2Lsa9kUafQuk4EVRjs8s65eYUakG7QbcVKO_d-5jl8cR_2oVK_FEgOd0crn.jpg?quality=95&as=32x21,48x32,72x48,108x72,160x107,240x161,360x241,480x321,540x362,640x428,720x482,1080x723,1280x857,1440x964,2560x1714&from=bu&cs=2560x0"
+                         alt="Щудровская палатка"
+                         loading="lazy">
+                    <div class="house-title">Щудровская палатка</div>
+                </button>
+                <div class="map-container">
+                    <script type="text/javascript" charset="utf-8" async
+                            src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3A9f81a150f8b10b85a1d62195e0d84ad4e0bd970a7c4f3251043d25040df37aae&amp;width=100%25&amp;height=100%25&amp;lang=ru_RU&amp;scroll=true"></script>
+                </div>
+            </div>
+        </div>
+
+        <!-- Музейно-выставочный центр -->
+        <div class="houses-block">
+            <div class="houses-header">
+                <h3>Музейно-выставочный центр</h3>
+                <p>Адрес: ул. Советская, 29</p>
+            </div>
+            <div class="houses-grid">
+                <button onclick="showPlashka('plashka6')" class="btn-house">
+                    <div class="visit-badge" id="badge-6">✓</div>
+                    <img src="https://sun9-59.userapi.com/s/v1/ig2/eRCz5F9js_c4uQKFMVo29aX9HgY4udak19pr8LvI7BH6spbMtnl59PonsvWnr-Yf3pmNCAFLfLiwMjSQKY3TXNcW.jpg?quality=95&as=32x21,48x32,72x48,108x72,160x107,240x160,360x240,480x320,540x360,640x426,720x480,1080x720,1280x853,1440x960,2560x1706&from=bu&cs=2560x0"
+                         alt="Музейно-выставочный центр"
+                         loading="lazy">
+                    <div class="house-title">Выставочный центр</div>
+                </button>
+                <div class="map-container">
+                    <script type="text/javascript" charset="utf-8" async
+                            src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3A161d7d969cb637a35576c0e12a436b7a091e0c02317b2a29cd747fd0bb48ee88&amp;width=100%25&amp;height=100%25&amp;lang=ru_RU&amp;scroll=true"></script>
+                </div>
+            </div>
+        </div>
+
+        <!-- Музей первого Совета -->
+        <div class="houses-block">
+            <div class="houses-header">
+                <h3>Музей первого Совета</h3>
+                <p>Адрес: ул. Советская, 27</p>
+            </div>
+            <div class="houses-grid">
+                <button onclick="showPlashka('plashka7')" class="btn-house">
+                    <div class="visit-badge" id="badge-7">✓</div>
+                    <img src="https://sun9-78.userapi.com/s/v1/ig2/0eFqDMH_XcLiDuhMFhxLYNaNh4G6lRRrNChM19II5_fAjZmp-hfmnO-g9176WxDH7Ur99ZXb11Vo6Iv3uB9qG4cQ.jpg?quality=95&as=32x24,48x36,72x54,108x81,160x120,240x180,360x270,480x360,540x405,640x480,720x540,1080x810,1280x960,1440x1080,2560x1920&from=bu&cs=2560x0"
+                         alt="Музей первого Совета"
+                         loading="lazy">
+                    <div class="house-title">Музей первого Совета</div>
+                </button>
+                <div class="map-container">
+                    <script type="text/javascript" charset="utf-8" async
+                            src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3A3b4d9cbf4e2ebbcb930ddb251be5d85c52fdc6ae961a328400213bcf15fe0037&amp;width=100%25&amp;height=100%25&amp;lang=ru_RU&amp;scroll=true"></script>
+                </div>
+            </div>
+        </div>
+
+        <!-- Дом-музей семьи Бубновых -->
+        <div class="houses-block">
+            <div class="houses-header">
+                <h3>Дом-музей семьи Бубновых</h3>
+                <p>Адрес: ул. III Интернационала, 45/43</p>
+            </div>
+            <div class="houses-grid">
+                <button onclick="showPlashka('plashka8')" class="btn-house">
+                    <div class="visit-badge" id="badge-8">✓</div>
+                    <img src="https://sun9-24.userapi.com/s/v1/ig2/E7yckaOZNh7WMCnhkiTXYbCyh4QTYUURlwskBFr3uJYeQp24wy6nXuFrHLPBaIpOXPdjT864QL3e5ec_Ou6clIgX.jpg?quality=95&as=32x24,48x36,72x54,108x81,160x120,240x180,360x270,480x360,540x405,640x480,720x540,1080x810,1280x960,1440x1080,2200x1650&from=bu&cs=2200x0"
+                         alt="Дом-музей семьи Бубновых"
+                         loading="lazy">
+                    <div class="house-title">Музей Бубновых</div>
+                </button>
+                <div class="map-container">
+                    <script type="text/javascript" charset="utf-8" async
+                            src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3A1d1132bd89929c4e08614259526b5d55b5ab39666b60f026458f852166e5819a&amp;width=100%25&amp;height=100%25&amp;lang=ru_RU&amp;scroll=true"></script>
+                </div>
+            </div>
+        </div>
+
+        <!-- Музей сыра -->
+        <div class="houses-block">
+            <div class="houses-header">
+                <h3>Музей сыра</h3>
+                <p>Адрес: Шереметевский проспект, 53</p>
+            </div>
+            <div class="houses-grid">
+                <button onclick="showPlashka('plashka9')" class="btn-house">
+                    <div class="visit-badge" id="badge-9">✓</div>
+                    <img src="https://sun9-19.userapi.com/s/v1/ig2/kKGB_KUNf30ckQqsjf2R4g5IZq19g691tfPBa7VQcLiMIQfDs0QqMB5Ni_bPCsJ6kDUbuO5wxuaomPZAo8BOxCS8.jpg?quality=95&as=32x20,48x30,72x44,108x66,160x98,240x148,360x222,480x295,540x332,640x394,720x443,1080x665,1280x788,1440x886,2560x1576&from=bu&cs=2560x0"
+                         alt="Музей сыра"
+                         loading="lazy">
+                    <div class="house-title">Музей сыра</div>
+                </button>
+                <div class="map-container">
+                    <script type="text/javascript" charset="utf-8" async
+                            src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3A9887e1c39c1a818fd7d37a3b51e92a1cd981139c63dae3de8ff82e4e3ac4ef51&amp;width=100%25&amp;height=100%25&amp;lang=ru_RU&amp;scroll=true"></script>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Оверлей -->
+    <div class="overlay" id="overlay" onclick="hideAllPlashkas()"></div>
+
+    <!-- Плашка 2 - Ивановский областной художественный музей -->
+    <div class="plashka" id="plashka2">
+        <div class="plashka-header">
+            <img src="https://sun9-65.userapi.com/s/v1/ig2/kV3yno95OdEPoAOkptMrcKfy4htKDuuOmIRYrFqdVwmD5AOARBp_7gIyhXvjjJK3pxd3DMNvwYaeWcZpOnwiZ0lm.jpg?quality=95&as=32x24,48x36,72x54,108x81,160x120,240x180,360x270,480x360,540x405,640x480,720x540,1080x810,1280x960,1440x1080,2048x1536&from=bu&cs=2048x0" alt="Ивановский областной художественный музей">
+            <div class="plashka-title">
+                <h2>Ивановский областной художественный музей</h2>
+                <div class="address">Адрес: пр. Ленина, 33</div>
+            </div>
+        </div>
+        <button class="close-btn" onclick="hideAllPlashkas()">×</button>
+
+        <div class="plashka-content">
+            <div class="content-section">
+                <h3>📖 История</h3>
+                <p>Ивановский областной художественный музей был образован по решению советского правительства 19 мая 1959 года. Изначально основу собрания ИОХМ составили приблизительно 16 тысяч экспонатов, переданных в 1960-61 годы из Ивановского областного краеведческого музея – бывшего Музея промышленности и искусства Д.Г. Бурылина, впоследствии Иваново-Вознесенского губернского музея.</p>
+                <p>Первая экспозиция художественного музея открылась в апреле 1960 года в помещении Драматического театра. В залах были представлены коллекции Древнего мира, предметы прикладного искусства Западной Европы, отдельные фрагменты собрания русского искусства.</p>
+            </div>
+
+            <div class="content-section">
+                <h3>🏛️ О музее</h3>
+                <p>Ивановский областной художественный музей принадлежит к редкому типу провинциальных музеев России. Специфика уникального тематического диапазона музейного собрания определяется наличием крупных целостных коллекций памятников культуры и искусства Древнего мира, предметов культа и быта стран Востока, отечественного и западноевропейского искусства XVI-ХХ столетий, русского авангарда, произведений советского и постсоветского времени, ивановской художественной школы.</p>
+                <p>Ивановский художественный музей сегодня - гуманитарно-коммуникативный центр с динамично развивающейся полифункциональной структурой, осуществляющий активную выставочную деятельность на региональном и международном уровнях. Основной фонд музея в настоящее время насчитывает более 45 тысяч единиц хранения и полностью представлен в оцифрованном виде в Государственном каталоге РФ.</p>
+            </div>
+
+            <div class="content-section">
+                <h3>🕒 Режим работы и цены</h3>
+                <p><strong>Часы работы:</strong> 10:00–18:00, касса 10:00–17:15</p>
+                <p><strong>Выходной день:</strong> вторник</p>
+                <p><strong>Санитарный день:</strong> 1-й понедельник месяца</p>
+                <p><strong>Цена билета:</strong> 50-200 руб.</p>
+                <p><strong>Адрес:</strong> пр. Ленина, 33</p>
+                <p><strong>Телефон:</strong> +7 (4932) 30-16-41</p>
+                <p><strong>Сайт:</strong> http://ivartmuseum.ru</p>
+            </div>
+        </div>
+        <div class="visit-control" id="visit-control-2">
+            <button class="btn-visit" onclick="toggleVisit(2)" id="visit-btn-2">
+                <span class="visit-icon">☐</span>
+                <span class="visit-text">Отметить посещение</span>
+            </button>
+            <div class="visit-stats">
+                Посетили: <span class="visit-count" id="visit-count-2">156</span> пользователей
+            </div>
+        </div>
+    </div>
+
+    <!-- Плашка 3 - Музей ивановского ситца -->
+    <div class="plashka" id="plashka3">
+        <div class="plashka-header">
+            <img src="https://sun9-31.userapi.com/s/v1/ig2/Ml1W261utQDCdQ1N7IZ96uh7xrFspOuJxF_Kl0OucF6VpdXFubhFUBTMjEnM_99M4nPKopHr4tev__77gsufdvCG.jpg?quality=95&as=32x21,48x32,72x48,108x72,160x107,240x160,360x240,480x320,540x360,640x427,720x480,1080x720,1280x854,1440x960,2000x1334&from=bu&cs=2000x0" alt="Музей ивановского ситца">
+            <div class="plashka-title">
+                <h2>Музей ивановского ситца</h2>
+                <div class="address">Адрес: ул. Батурина, 11/42</div>
+            </div>
+        </div>
+        <button class="close-btn" onclick="hideAllPlashkas()">×</button>
+
+        <div class="plashka-content">
+            <div class="content-section">
+                <h3>📖 История</h3>
+                <p>Музей был открыт 9 июня 1987 года ко Дню работников текстильной и лёгкой промышленности. В его создании участвовали 122 предприятия Ивановской области. Он считается самым молодым подразделением музейного объединения имени Д. Г. Бурылина.</p>
+                <p>Находится он на бывшей Георгиевской улице, переименованной при коммунистах в проспект Ленина. До 1918 года особняк принадлежал Дмитрию Геннадьевичу Бурылину.</p>
+                <p>В подвале дома стоят ткацкие станки и машины для отделки тканей. Но в первую очередь стоит обратить внимание на подземный ход. Он соединяет особняк Бурылина с основанным им же городским музеем. Подземный ход прорыли в 1914 году. По сей день он находится в хорошем состоянии.</p>
+            </div>
+
+            <div class="content-section">
+                <h3>🏛️ О музее</h3>
+                <p>Музей ивановского ситца – самый молодой отдел ИГИКМ имени Д.Г. Бурылина. В основу экспозиции музея легла уникальная текстильная коллекция, насчитывающая полмиллиона единиц. Музей расположился в родовом доме Дмитрия Геннадьевича Бурылина, построенном в начале XX века в стиле «модерн».</p>
+                <p>Основная экспозиция музея «Ивановский текстиль. История и современность» повествует о развитии производства с древнейших времен до наших дней. Доминантная идея экспозиции – показ ивановских ситцев, как одного из видов декоративно-прикладного искусства, сохраняющего и развивающего традиции народного орнамента.</p>
+                <p>В 2007 г. при содействии Московского Дома Моды «Слава Зайцев», Правительства Ивановской области и клуба «Деловая женщина» была открыта экспозиция «Слава Зайцев. Жизнь = Творчество» - рассказ о жизни и творчестве всемирно известного модельера, который родился в Иваново, здесь закончил текстильный техникум и начал свой творческий путь.</p>
+            </div>
+
+            <div class="content-section">
+                <h3>🕒 Режим работы и цены</h3>
+                <p><strong>Часы работы:</strong> 10:00–18:00</p>
+                <p><strong>Выходной день:</strong> понедельник</p>
+                <p><strong>Санитарный день:</strong> последняя пятница месяца</p>
+                <p><strong>Цена билета:</strong> 100-250 руб.</p>
+                <p><strong>Адрес:</strong> ул. Батурина, 11/42</p>
+                <p><strong>Телефон:</strong> +7 (4932) 41-64-26</p>
+                <p><strong>Сайт:</strong> https://www.музейбурылина.рф</p>
+            </div>
+        </div>
+        <div class="visit-control" id="visit-control-3">
+            <button class="btn-visit" onclick="toggleVisit(3)" id="visit-btn-3">
+                <span class="visit-icon">☐</span>
+                <span class="visit-text">Отметить посещение</span>
+            </button>
+            <div class="visit-stats">
+                Посетили: <span class="visit-count" id="visit-count-3">89</span> пользователей
+            </div>
+        </div>
+    </div>
+
+    <!-- Плашка 4 - Музей промышленности и искусства -->
+    <div class="plashka" id="plashka4">
+        <div class="plashka-header">
+            <img src="https://sun9-78.userapi.com/s/v1/ig2/g2HnNrXn438E3T283dVQND6f-hCLL1XaX9OtNEpERVpSJkn8UH3blap0ycKlEiRqE0dhRtpDvU4elFvWGuGsVV8T.jpg?quality=95&as=32x24,48x36,72x54,108x81,160x120,240x180,360x270,480x360,540x405,640x480,720x540,1080x810,1280x960,1440x1080,2560x1920&from=bu&cs=2560x0" alt="Музей промышленности и искусства">
+            <div class="plashka-title">
+                <h2>Музей промышленности и искусства</h2>
+                <div class="address">Адрес: ул. Батурина, 6/40</div>
+            </div>
+        </div>
+        <button class="close-btn" onclick="hideAllPlashkas()">×</button>
+
+        <div class="plashka-content">
+            <div class="content-section">
+                <h3>📖 История</h3>
+                <p>Торжественное открытие музея состоялось 26 декабря 1914 года. Здание музея построено по проекту архитектора П.А.Трубникова в стиле неоклассицизма. Музей промышленности и искусства с начала XX века по праву считается одним из лучших провинциальных музеев России. Его основателем был иваново-вознесенский фабрикант, меценат и коллекционер Дмитрий Геннадьевич Бурылин. Время формирования коллекций и создание уникального музея – конец XIX – начало XX веков.</p>
+                <p>В Иванове-Вознесенске выставки коллекций Д.Г.Бурылина организовывались несколько раз, наиболее крупные из них прошли в 1903, 1905, 1908 и 1912 годах. Часть из выставок давала представление о собрании в целом, часть затрагивала отдельные коллекции, например – оружие или нумизматику.</p>
+            </div>
+
+            <div class="content-section">
+                <h3>🏛️ О музее</h3>
+                <p>Залы на трёх этажах создают великолепное экспозиционное пространство для уникальных коллекций, собранных и подаренных городу Д.Г.Бурылиным. Создавая музей, Дмитрий Геннадьевич попытался приблизить богатство мировой культуры к русской провинции. За несколько десятилетий (конец XIX- начало XX века) им была собрана уникальная коллекция предметов. Хронологические рамки её - от античности до начала XX века. Фондовое собрание поражает своей широтой: книги, фарфор, живопись, оружие, нумизматика, предметы декоративно-прикладного искусства и многое другое. Интерес к ним безграничен.</p>
+                <p>Музей предлагает вниманию посетителей следующие постоянные экспозиции: «Природа Ивановского края», «Арсенал» (открыта в 2005 г.), «Золотая кладовая» (открыта в 2006 г.), «Европейская коллекция» (открыта в 2005 г.), «Искусство и время» (открыта в 2003 г.), «Кабинет Д. Г. Бурылина».</p>
+            </div>
+
+            <div class="content-section">
+                <h3>🕒 Режим работы и цены</h3>
+                <p><strong>Часы работы:</strong> 10:00–18:00</p>
+                <p><strong>Выходной день:</strong> понедельник</p>
+                <p><strong>Санитарный день:</strong> последняя пятница месяца</p>
+                <p><strong>Цена билета:</strong> 50-250 руб.</p>
+                <p><strong>Адрес:</strong> ул. Батурина, 6/40</p>
+                <p><strong>Телефон:</strong> +7 (4932) 32-74-05</p>
+                <p><strong>Сайт:</strong> https://www.музейбурылина.рф</p>
+            </div>
+        </div>
+        <div class="visit-control" id="visit-control-4">
+            <button class="btn-visit" onclick="toggleVisit(4)" id="visit-btn-4">
+                <span class="visit-icon">☐</span>
+                <span class="visit-text">Отметить посещение</span>
+            </button>
+            <div class="visit-stats">
+                Посетили: <span class="visit-count" id="visit-count-4">203</span> пользователей
+            </div>
+        </div>
+    </div>
+
+    <!-- Плашка 5 - Музей советского автопрома -->
+    <div class="plashka" id="plashka5">
+        <div class="plashka-header">
+            <img src="https://sun9-79.userapi.com/s/v1/ig2/aD_7O-pB1G2kbuQQLMnI4UNkTCLTiNs4PQhE08P5pO_7-nw9fQfWK6GOS_1Gr-hVaoRu8oTG-z_6VzNdtFKW1n-h.jpg?quality=95&as=32x24,48x36,72x54,108x81,160x120,240x180,360x270,480x360,540x405,640x480,720x540,960x720&from=bu&cs=960x0" alt="Музей советского автопрома">
+            <div class="plashka-title">
+                <h2>Музей советского автопрома</h2>
+                <div class="address">Адрес: ул. Парижской Коммуны, 16В</div>
+            </div>
+        </div>
+        <button class="close-btn" onclick="hideAllPlashkas()">×</button>
+
+        <div class="plashka-content">
+            <div class="content-section">
+                <h3>📖 История</h3>
+                <p>Летом 2014 года руководство группы компаний РИАТ приняло решение о создании музея советских авто. Решение это не было спонтанным, так как ремонт и изготовление автомобильной техники и было первоначальным предназначением предприятия. Создание музея - попытка вернуться к истокам, дань уважения славному прошлому, что так важно в наш обезличенный век глобализации.</p>
+                <p>В 2018 году туроператоры при Минкультуре РФ включили организацию в топ-15 самых интересных частных музеев нашей страны.</p>
+            </div>
+
+            <div class="content-section">
+                <h3>🏛️ О музее</h3>
+                <p>На небольшой площади, разделённой на три помещения, представлено 23 автомобиля. Все они подарены музею частными коллекционерами и считаются детищами легендарных заводов: «ЗИЛ», «ГАЗ», «ЗИС», «ВАЗ», «ЗИМ». Некоторые из них модифицированы и приспособлены к современным условиям (например, ГАЗ21, который есть в гараже у нашего президента). Но имеются и совершенно оригинальные, затронутые временем образцы (такие как военный ГАЗ-67Б). Они, словно взгляд из прошлого, дают возможность посетителям музея дофантазировать какие испытания выпали на долю авто.</p>
+                <p>Вся техника в прекрасном состоянии, более того, она не только на ходу, но и зарегистрирована в ГИБДД. Об этом посетителям сообщают регистрационные знаки. Но прокатиться на автомобилях не получится — их не сдают в аренду. Машины можно увидеть на улицах города лишь во время проведения ретропарадов.</p>
+            </div>
+
+            <div class="content-section">
+                <h3>🕒 Режим работы и цены</h3>
+                <p><strong>Часы работы:</strong> Четверг-Воскресенье: 12:00–18:00</p>
+                <p><strong>Выходные дни:</strong> Понедельник-Среда</p>
+                <p><strong>Цена билета:</strong> 300 руб. (есть специальные цены)</p>
+                <p><strong>Адрес:</strong> ул. Парижской Коммуны, 16В</p>
+                <p><strong>Телефон:</strong> +7 (4932) 45-90-47</p>
+                <p><strong>Сайт:</strong> https://museum37.ru</p>
+            </div>
+        </div>
+        <div class="visit-control" id="visit-control-5">
+            <button class="btn-visit" onclick="toggleVisit(5)" id="visit-btn-5">
+                <span class="visit-icon">☐</span>
+                <span class="visit-text">Отметить посещение</span>
+            </button>
+            <div class="visit-stats">
+                Посетили: <span class="visit-count" id="visit-count-5">67</span> пользователей
+            </div>
+        </div>
+    </div>
+
+    <!-- Плашка 6 - Музейно-выставочный центр -->
+    <div class="plashka" id="plashka6">
+        <div class="plashka-header">
+            <img src="https://sun9-59.userapi.com/s/v1/ig2/eRCz5F9js_c4uQKFMVo29aX9HgY4udak19pr8LvI7BH6spbMtnl59PonsvWnr-Yf3pmNCAFLfLiwMjSQKY3TXNcW.jpg?quality=95&as=32x21,48x32,72x48,108x72,160x107,240x160,360x240,480x320,540x360,640x426,720x480,1080x720,1280x853,1440x960,2560x1706&from=bu&cs=2560x0" alt="Музейно-выставочный центр">
+            <div class="plashka-title">
+                <h2>Музейно-выставочный центр</h2>
+                <div class="address">Адрес: ул. Советская, 29</div>
+            </div>
+        </div>
+        <button class="close-btn" onclick="hideAllPlashkas()">×</button>
+
+        <div class="plashka-content">
+            <div class="content-section">
+                <h3>📖 История</h3>
+                <p>Здание построено как Музей первого Совета в 1980 году по индивидуальному проекту архитекторов А.И.Толстопятова и В.М.Шахматова. Здание было открыто 28 мая 1980 г. к 75-летнему юбилею образования первого в России общегородского Совета рабочих депутатов.</p>
+            </div>
+
+            <div class="content-section">
+                <h3>🏛️ О музее</h3>
+                <p>Входит в Ивановский государственный историко-краеведческий музей имени Д.Г. Бурылина. В настоящее время Музейно-выставочный центр – современное экспозиционное пространство, оборудованное всем необходимым для демонстрации выставок различной тематики. Общая площадь экспозиционных залов более 800 м².</p>
+                <p>В здании имеется конференц-зал на 138 посадочных мест, оборудованный современным кинооборудованием и современной звуковой техникой: экраном с автоматической раздвижной одеждой сцены, кинооборудованием, которое позволит транслировать видеофильмы в режиме 3D и 2D с субтитрованием и тифлокомментированием.</p>
+                <p>Музейно-выставочный центр может принимать и лиц с ограниченными возможностями здоровья: входная зона оборудована кнопкой вызова сотрудника и пандусами для инвалидных колясок, на первом этаже расположена санитарная комната для данной категории посетителей.</p>
+            </div>
+
+            <div class="content-section">
+                <h3>🕒 Режим работы и цены</h3>
+                <p><strong>Часы работы:</strong> Вт-Вс: 10:00–18:00, касса до 17:30</p>
+                <p><strong>Выходной день:</strong> понедельник</p>
+                <p><strong>Санитарный день:</strong> последняя пятница месяца</p>
+                <p><strong>Цена билета:</strong> 100-250 руб.</p>
+                <p><strong>Адрес:</strong> ул. Советская, 29</p>
+                <p><strong>Телефон:</strong> +7 (4932) 41-38-12</p>
+                <p><strong>Сайт:</strong> https://igikm.ru</p>
+            </div>
+        </div>
+        <div class="visit-control" id="visit-control-6">
+            <button class="btn-visit" onclick="toggleVisit(6)" id="visit-btn-6">
+                <span class="visit-icon">☐</span>
+                <span class="visit-text">Отметить посещение</span>
+            </button>
+            <div class="visit-stats">
+                Посетили: <span class="visit-count" id="visit-count-6">98</span> пользователей
+            </div>
+        </div>
+    </div>
+
+    <!-- Плашка 7 - Музей первого Совета -->
+    <div class="plashka" id="plashka7">
+        <div class="plashka-header">
+            <img src="https://sun9-78.userapi.com/s/v1/ig2/0eFqDMH_XcLiDuhMFhxLYNaNh4G6lRRrNChM19II5_fAjZmp-hfmnO-g9176WxDH7Ur99ZXb11Vo6Iv3uB9qG4cQ.jpg?quality=95&as=32x24,48x36,72x54,108x81,160x120,240x180,360x270,480x360,540x405,640x480,720x540,1080x810,1280x960,1440x1080,2560x1920&from=bu&cs=2560x0" alt="Музей первого Совета">
+            <div class="plashka-title">
+                <h2>Музей первого Совета</h2>
+                <div class="address">Адрес: ул. Советская, 27</div>
+            </div>
+        </div>
+        <button class="close-btn" onclick="hideAllPlashkas()">×</button>
+
+        <div class="plashka-content">
+            <div class="content-section">
+                <h3>📖 История</h3>
+                <p>Музей располагается в историческом месте, в здании Мещанской управы. Это здание было построено еще в 1904 году по проекту инженера П.Д Афанасьева для органа местного самоуправления – мещанской управы. В мае 1905 года здесь проходили заседания первого в России общегородского Совета рабочих депутатов, созданного в ходе всеобщей политической стачки иваново-вознесенских рабочих. С 1919 года в здании Мещанской управы размещались различные учреждения, затем коммунальные квартиры.</p>
+                <p>В 2005 году исполнилось 100 лет событиям первой русской революции и первому общегородскому совету рабочих депутатов в г. Иваново-Вознесенск. В эти майские дни произошло третье рождение Музея первого Совета.</p>
+            </div>
+
+            <div class="content-section">
+                <h3>🏛️ О музее</h3>
+                <p>Входит в Ивановский государственный историко-краеведческий музей имени Д.Г. Бурылина. В настоящее время в музее открыта экспозиция "По волнам нашей памяти", аналогов которой нет в регионе (Ивановской и соседних областях). Выставка посвящена повседневной жизни советских граждан. Концепция экспозиции предполагает демонстрацию двух сторон советской реальности – официальной и приватной, их взаимодействия, проникновения и отторжения.</p>
+                <p>«Так и было!» - постоянная экспозиция музея. Мемориальный зал – восстановлен интерьер зала заседаний Мещанской управы, где проводились заседания этого органа, решались текущие вопросы, а также проводились детские праздники и елки. В мае 1905 г. здесь прошли первые заседания первого общегородского Совета рабочих депутатов.</p>
+            </div>
+
+            <div class="content-section">
+                <h3>🕒 Режим работы и цены</h3>
+                <p><strong>Часы работы:</strong> 10:00–18:00</p>
+                <p><strong>Выходной день:</strong> понедельник</p>
+                <p><strong>Санитарный день:</strong> последняя пятница месяца</p>
+                <p><strong>Цена билета:</strong> 50-200 руб.</p>
+                <p><strong>Адрес:</strong> ул. Советская, 27</p>
+                <p><strong>Телефон:</strong> +7 (4932) 30-89-11</p>
+                <p><strong>Сайт:</strong> https://igikm.ru</p>
+            </div>
+        </div>
+        <div class="visit-control" id="visit-control-7">
+            <button class="btn-visit" onclick="toggleVisit(7)" id="visit-btn-7">
+                <span class="visit-icon">☐</span>
+                <span class="visit-text">Отметить посещение</span>
+            </button>
+            <div class="visit-stats">
+                Посетили: <span class="visit-count" id="visit-count-7">45</span> пользователей
+            </div>
+        </div>
+    </div>
+
+    <!-- Плашка 8 - Дом-музей семьи Бубновых -->
+    <div class="plashka" id="plashka8">
+        <div class="plashka-header">
+            <img src="https://sun9-24.userapi.com/s/v1/ig2/E7yckaOZNh7WMCnhkiTXYbCyh4QTYUURlwskBFr3uJYeQp24wy6nXuFrHLPBaIpOXPdjT864QL3e5ec_Ou6clIgX.jpg?quality=95&as=32x24,48x36,72x54,108x81,160x120,240x180,360x270,480x360,540x405,640x480,720x540,1080x810,1280x960,1440x1080,2200x1650&from=bu&cs=2200x0" alt="Дом-музей семьи Бубновых">
+            <div class="plashka-title">
+                <h2>Дом-музей семьи Бубновых</h2>
+                <div class="address">Адрес: ул. III Интернационала, 45/43</div>
+            </div>
+        </div>
+        <button class="close-btn" onclick="hideAllPlashkas()">×</button>
+
+        <div class="plashka-content">
+            <div class="content-section">
+                <h3>📖 История</h3>
+                <p>Дом был построен в 1860 г. как жилой для семьи купцов Бубновых. Жилой дом с мезонином сохранился до нашего времени. К концу 1880-х гг. дом целиком перешел во владение С.Е.Бубнова, который в течение нескольких лет являлся членом городской управы. В первой половине XX в. в доме жила семья В.С.Бубнова, в дальнейшем – его потомки. В 1976 г. решением Облисполкома Ивановской области дом с мезонином был принят под охрану государства в качестве памятника истории.</p>
+                <p>4 ноября 1978 г. состоялось открытие мемориального дома-музея Андрея Сергеевича Бубнова – революционера-большевика, видного партийного и государственного деятеля, Народного комиссара просвещения СССР.</p>
+            </div>
+
+            <div class="content-section">
+                <h3>🏛️ О музее</h3>
+                <p>Дом-музей семьи Бубновых — подразделение Ивановского государственного историко-краеведческого музея имени Д. Г. Бурылина. Постоянная экспозиция музея «Листая страницы семейного альбома» рассказывает историю семьи Бубновых; при этом отдельно выделена часть, посвящённая А. С. Бубнову.</p>
+                <p>В мемориальном пространстве восстановлен облик семейной гостиной, где своё время проводили А. С. Бубнов и его семья. Здесь можно увидеть фамильное зеркало, возраст которого — около 150 лет, предметы быта XIX–XX веков.</p>
+                <p>С 2002 года в доме проводятся камерные выставки, посвящённые истории известных иваново-вознесенских семей, под общим названием «Моя семья. Моя родословная».</p>
+            </div>
+
+            <div class="content-section">
+                <h3>🕒 Режим работы и цены</h3>
+                <p><strong>Часы работы:</strong> 10:00–18:00</p>
+                <p><strong>Выходной день:</strong> понедельник</p>
+                <p><strong>Санитарный день:</strong> последняя пятница месяца</p>
+                <p><strong>Цена билета:</strong> 50-200 руб.</p>
+                <p><strong>Адрес:</strong> ул. III Интернационала, 45/43</p>
+                <p><strong>Телефон:</strong> +7 (4932) 32-76-18</p>
+                <p><strong>Сайт:</strong> https://музейбурылина.рф</p>
+            </div>
+        </div>
+        <div class="visit-control" id="visit-control-8">
+            <button class="btn-visit" onclick="toggleVisit(8)" id="visit-btn-8">
+                <span class="visit-icon">☐</span>
+                <span class="visit-text">Отметить посещение</span>
+            </button>
+            <div class="visit-stats">
+                Посетили: <span class="visit-count" id="visit-count-8">178</span> пользователей
+            </div>
+        </div>
+    </div>
+
+    <!-- Плашка 9 - Музей сыра -->
+    <div class="plashka" id="plashka9">
+        <div class="plashka-header">
+            <img src="https://sun9-19.userapi.com/s/v1/ig2/kKGB_KUNf30ckQqsjf2R4g5IZq19g691tfPBa7VQcLiMIQfDs0QqMB5Ni_bPCsJ6kDUbuO5wxuaomPZAo8BOxCS8.jpg?quality=95&as=32x20,48x30,72x44,108x66,160x98,240x148,360x222,480x295,540x332,640x394,720x443,1080x665,1280x788,1440x886,2560x1576&from=bu&cs=2560x0" alt="Музей сыра">
+            <div class="plashka-title">
+                <h2>Музей сыра</h2>
+                <div class="address">Адрес: Шереметевский проспект, 53</div>
+            </div>
+        </div>
+        <button class="close-btn" onclick="hideAllPlashkas()">×</button>
+
+        <div class="plashka-content">
+            <div class="content-section">
+                <h3>📖 История</h3>
+                <p>В ноябре 2020 года директор Пучежского сыродельного завода Николай Куликов анонсировал появление музея сыра в Иванове. По его словам, музей должен был не только рассказывать об истории сыроварения, но и позволять посетителям участвовать в процессе.</p>
+                <p>В июле 2021 года музей начал сбор экспонатов, связанных с молоком и производством сыра: фотографий, значков, старинных форм для сыра, деревянных маслобоек и других. К поиску экспонатов присоединился Пучежский краеведческий музей, запустивший акцию «Пучежский сырочек — лакомый кусочек».</p>
+                <p>В начале 2022 года музей открыл свои двери.</p>
+            </div>
+
+            <div class="content-section">
+                <h3>🏛️ О музее</h3>
+                <p>Музей состоит из двух выставочных залов, посвящённых сыру. Первый зал — здесь представлены экспонаты, карта с информацией о видах сыра и странах их происхождения, фотографии и документы, рассказывающие об истории сыроварения в Ивановской области и о возникновении Пучежского сыродельного завода, оборудование сыроделов и другие экспонаты. Часть архивных документов в музей передала бывший директор Аньковского сырзавода Тамара Курскова.</p>
+                <p>Второй зал — здесь проходит дегустация с большим столом и витринами с основными видами сыра, который выпускает Пучежский сыродельный завод. Здесь всегда можно найти и попробовать легендарные сорта и абсолютно новые вкусы сыра. Во время дегустации вы узнаете много полезной и "вкусной" информации о том, как составляется сырная тарелка для дегустации и какой сыр с чем лучше сочетается.</p>
+                <p>В музее можно посетить экскурсии, мастер-классы и провести мероприятия.</p>
+            </div>
+
+            <div class="content-section">
+                <h3>🕒 Режим работы и цены</h3>
+                <p><strong>Часы работы:</strong> Пн-Вс: 10:00–20:00</p>
+                <p><strong>Цена билета:</strong> от 400 руб.</p>
+                <p><strong>Адрес:</strong> Шереметевский проспект, 53</p>
+                <p><strong>Телефон:</strong> +7 (963) 151-99-43</p>
+                <p><strong>Сайт:</strong> https://cheese-museum37.ru</p>
+            </div>
+        </div>
+        <div class="visit-control" id="visit-control-9">
+            <button class="btn-visit" onclick="toggleVisit(9)" id="visit-btn-9">
+                <span class="visit-icon">☐</span>
+                <span class="visit-text">Отметить посещение</span>
+            </button>
+            <div class="visit-stats">
+                Посетили: <span class="visit-count" id="visit-count-9">234</span> пользователей
+            </div>
+        </div>
+    </div>
+
+    <!-- Плашка 10 - Щудровская палатка -->
+    <div class="plashka" id="plashka10">
+        <div class="plashka-header">
+            <img src="https://sun9-2.userapi.com/s/v1/ig2/0pYJq9JJ29LLKSX69B9_1DJI9-3_j2Lsa9kUafQuk4EVRjs8s65eYUakG7QbcVKO_d-5jl8cR_2oVK_FEgOd0crn.jpg?quality=95&as=32x21,48x32,72x48,108x72,160x107,240x161,360x241,480x321,540x362,640x428,720x482,1080x723,1280x857,1440x964,2560x1714&from=bu&cs=2560x0" alt="Щудровская палатка">
+            <div class="plashka-title">
+                <h2>Щудровская палатка</h2>
+                <div class="address">Адрес: ул. 10-го Августа, 36-а</div>
+            </div>
+        </div>
+        <button class="close-btn" onclick="hideAllPlashkas()">×</button>
+
+        <div class="plashka-content">
+            <div class="content-section">
+                <h3>📖 История</h3>
+                <p>Щудровская палатка — самая ранняя каменная постройка в городе, сохранившаяся с XVII века. Была построена как приказная изба для управляющего князей Черкасских, владевших селом Иваново.</p>
+                <p>В XVIII веке, когда Иваново принадлежало уже графу Шереметеву, приказную избу купил разбогатевший крестьянин Осип Щудров. Он превратил здание в набойную палатку, то есть в набойную мастерскую. Здесь набивали холсты – наносили рисунок на ткань. С тех пор это здание и стали называть Щудровской палаткой.</p>
+            </div>
+
+            <div class="content-section">
+                <h3>🏛️ О музее</h3>
+                <p>Щудровская палатка — старейшее из сохранившихся до наших дней кирпичных зданий в Иванове. Это памятник архитектуры федерального значения.</p>
+                <p>Один из символов города. Считается уникальным, не имеющим аналогов в соседних областях, примером гражданской каменной архитектуры XVII века. Находится в центре города между улицами 10 Августа и Красногвардейской, в непосредственной близости от площади Революции.</p>
+                <p>Окна обрамлены фигурными наличниками с килевидными завершениями, над цоколем проходит орнаментальный пояс. В здании имеются две комнаты — большая и малая. В настоящее время Щудровская палатка является отделом Ивановского историко-краеведческого музея им. Д. Г. Бурылина.</p>
+            </div>
+
+            <div class="content-section">
+                <h3>🕒 Режим работы и цены</h3>
+                <p><strong>Важная информация:</strong> Здание не является музеем и закрыто для посетителей. Интерес представляет сама постройка как памятник архитектуры.</p>
+                <p><strong>Доступ:</strong> Осмотр возможен только снаружи</p>
+                <p><strong>Цена билета:</strong> Бесплатно (наружный осмотр)</p>
+                <p><strong>Адрес:</strong> ул. 10-го Августа, 36-а</p>
+                <p><strong>Телефон:</strong> +7 (4932) 32-74-05 (справочная музея им. Бурылина)</p>
+                <p><strong>Сайт:</strong> https://igikm.ru/o-muzee/shchudrovskaya-palatka/</p>
+            </div>
+        </div>
+        <div class="visit-control" id="visit-control-10">
+            <button class="btn-visit" onclick="toggleVisit(10)" id="visit-btn-10">
+                <span class="visit-icon">☐</span>
+                <span class="visit-text">Отметить посещение</span>
+            </button>
+            <div class="visit-stats">
+                Посетили: <span class="visit-count" id="visit-count-10">112</span> пользователей
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showPlashka(plashkaId) {
+            hideAllPlashkas();
+            document.getElementById(plashkaId).style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function hideAllPlashkas() {
+            const plashkas = document.querySelectorAll('.plashka');
+            plashkas.forEach(plashka => {
+                plashka.style.display = 'none';
+            });
+            document.getElementById('overlay').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                hideAllPlashkas();
+            }
+        });
+
+        document.querySelectorAll('.plashka').forEach(plashka => {
+            plashka.addEventListener('click', function(event) {
+                event.stopPropagation();
+            });
+        });
+
+        // Хранилище для посещённых мест
+        let visitedPlaces = JSON.parse(localStorage.getItem('visited_places') || '[]');
+
+        function updateVisitBadges() {
+            // Для всех кнопок (от 1 до 10)
+            for (let id = 1; id <= 10; id++) {
+                const badge = document.getElementById(`badge-${id}`);
+                const btn = document.getElementById(`visit-btn-${id+1}`); // +1 потому что visit-btn начинаются с 2
+
+                if (badge && visitedPlaces.includes((id+1).toString())) {
+                    badge.classList.add('visible');
+                    if (btn) {
+                        btn.classList.add('visited');
+                        btn.querySelector('.visit-text').textContent = 'Посещено ✓';
+                    }
+                } else {
+                    if (badge) badge.classList.remove('visible');
+                    if (btn) {
+                        btn.classList.remove('visited');
+                        btn.querySelector('.visit-text').textContent = 'Отметить посещение';
+                    }
+                }
+            }
+        }
+
+        function toggleVisit(placeId) {
+            const isLoggedIn = {{ 'true' if session.user_id else 'false' }};
+
+            if (!isLoggedIn) {
+                alert('Для отметки посещения необходимо войти в систему!');
+                hideAllPlashkas();
+                return;
+            }
+
+            const placeIdStr = placeId.toString();
+            const index = visitedPlaces.indexOf(placeIdStr);
+
+            if (index === -1) {
+                visitedPlaces.push(placeIdStr);
+                const countElement = document.getElementById(`visit-count-${placeId}`);
+                if (countElement) {
+                    const currentCount = parseInt(countElement.textContent) || 0;
+                    countElement.textContent = currentCount + 1;
+                }
+                alert('Место отмечено как посещённое!');
+            } else {
+                visitedPlaces.splice(index, 1);
+                const countElement = document.getElementById(`visit-count-${placeId}`);
+                if (countElement) {
+                    const currentCount = parseInt(countElement.textContent) || 1;
+                    countElement.textContent = Math.max(0, currentCount - 1);
+                }
+                alert('Отметка о посещении удалена!');
+            }
+
+            localStorage.setItem('visited_places', JSON.stringify(visitedPlaces));
+            updateVisitBadges();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            updateVisitBadges();
+
+            // Инициализация счетчиков если они пустые
+            for (let id = 2; id <= 10; id++) {
+                const countElement = document.getElementById(`visit-count-${id}`);
+                if (countElement && !countElement.textContent.trim()) {
+                    countElement.textContent = '0';
+                }
+            }
+        });
+    </script>
+</body>
+
+{% endblock %}
+</html>

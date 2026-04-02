@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="ru">
+{% extends "base.html" %}
+
+{% block title %}Арт-объекты - Архитектурные памятники Иваново{% endblock %}
+
+{% block content %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Арт-объекты - Архитектурные памятники Иваново</title>
+    <style>
+        /* ========== CSS ПЕРЕМЕННЫЕ ========== */
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5a67d8;
+            --secondary: #764ba2;
+            --success: #4CAF50;
+            --success-dark: #2E7D32;
+            --info: #2196F3;
+            --danger: #FF6B6B;
+            --danger-dark: #FF5252;
+            --text-dark: #2c3e50;
+            --text-light: #666;
+            --text-muted: #555;
+            --bg-light: #f8f9fa;
+            --white: #ffffff;
+            --border: #e0e0e0;
+            --shadow-sm: 0 5px 20px rgba(0,0,0,0.1);
+            --shadow-md: 0 8px 25px rgba(0,0,0,0.15);
+            --shadow-lg: 0 15px 35px rgba(0,0,0,0.2);
+            --radius-sm: 8px;
+            --radius-md: 15px;
+            --radius-lg: 20px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--white);
+            min-height: 100vh;
+            padding: clamp(15px, 4vw, 40px) clamp(10px, 3vw, 20px);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: clamp(20px, 4vw, 30px);
+        }
+
+        /* ========== ТИПОГРАФИКА ========== */
+        h1 { font-size: clamp(1.8rem, 5vw, 2.5rem); }
+        h2 { font-size: clamp(1.5rem, 4vw, 2rem); }
+        h3 { font-size: clamp(1.2rem, 3vw, 1.8rem); }
+        p { font-size: clamp(0.95rem, 2vw, 1.1rem); }
+
+        /* ========== ЗАГОЛОВОЧНЫЙ БЛОК ========== */
+        .header-block {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: clamp(20px, 5vw, 40px) clamp(20px, 4vw, 30px);
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            width: 100%;
+        }
+
+        .header-block h1 {
+            color: var(--text-dark);
+            text-align: center;
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .intro-text {
+            font-size: clamp(1rem, 2.5vw, 1.1rem);
+            line-height: 1.7;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            text-align: justify;
+        }
+
+        .route-guide-title {
+            color: var(--text-dark);
+            font-size: clamp(1.4rem, 3.5vw, 1.8rem);
+            margin: 30px 0 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .instructions-list {
+            background: var(--bg-light);
+            border-radius: var(--radius-md);
+            padding: clamp(15px, 4vw, 25px);
+            margin-bottom: 30px;
+            border: 1px solid var(--border);
+        }
+
+        .instruction-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .instruction-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .instruction-number {
+            background: var(--primary);
+            color: var(--white);
+            width: clamp(25px, 5vw, 30px);
+            height: clamp(25px, 5vw, 30px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+            font-size: clamp(0.9rem, 2vw, 1rem);
+        }
+
+        .instruction-text {
+            font-size: clamp(0.95rem, 2vw, 1.1rem);
+            color: var(--text-dark);
+            line-height: 1.5;
+            flex: 1;
+        }
+
+        .tip-section {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border-left: 4px solid var(--primary);
+            padding: 15px 20px;
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            margin: 25px 0 15px;
+        }
+
+        .tip-title {
+            color: var(--text-dark);
+            font-size: clamp(1.2rem, 3vw, 1.4rem);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tip-title::before {
+            content: '💡';
+            font-size: 1.2rem;
+        }
+
+        .tip-text {
+            font-size: clamp(0.95rem, 2vw, 1.1rem);
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* Кнопка скачивания */
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--primary);
+            color: var(--white);
+            padding: clamp(10px, 2vw, 12px) clamp(20px, 4vw, 25px);
+            border-radius: var(--radius-sm);
+            text-decoration: none;
+            font-weight: bold;
+            transition: var(--transition);
+            margin: 20px 0;
+            border: none;
+            cursor: pointer;
+        }
+
+        .download-btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-icon {
+            font-size: 1.2rem;
+        }
+
+        /* ========== БЛОКИ С КАРТАМИ ========== */
+        .houses-block {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: clamp(20px, 5vw, 35px);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            width: 100%;
+        }
+
+        .houses-header {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .houses-header h3 {
+            color: var(--text-dark);
+            margin-bottom: 5px;
+        }
+
+        .houses-header p {
+            color: var(--text-light);
+            font-size: clamp(0.9rem, 2vw, 1rem);
+        }
+
+        /* Сетка для карты и кнопки */
+        .houses-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: clamp(15px, 3vw, 30px);
+            align-items: stretch;
+        }
+
+        /* ========== КНОПКИ-КАРТОЧКИ ========== */
+        .btn-house {
+            background: var(--white);
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 0;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            position: relative;
+            width: 100%;
+            height: 100%;
+            min-height: 350px;
+            display: block;
+            text-decoration: none;
+        }
+
+        .btn-house:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-house img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+            display: block;
+        }
+
+        .btn-house:hover img {
+            transform: scale(1.05);
+        }
+
+        .btn-house::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            pointer-events: none;
+        }
+
+        .house-title {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: var(--white);
+            font-size: clamp(1.1rem, 3vw, 1.3rem);
+            font-weight: bold;
+            z-index: 2;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            padding: 0 15px;
+            line-height: 1.3;
+        }
+
+        /* ========== КОНТЕЙНЕРЫ ДЛЯ КАРТ ========== */
+        .map-container {
+            width: 100%;
+            height: 100%;
+            min-height: 350px;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            background: var(--bg-light);
+            position: relative;
+        }
+
+        .map-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        /* ========== БЕЙДЖИ ПОСЕЩЕНИЙ ========== */
+        .visit-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            z-index: 10;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .visit-badge.visible {
+            opacity: 1;
+        }
+
+        .btn-house:hover .visit-badge {
+            transform: scale(1.1);
+        }
+
+        /* ========== ПЛАШКИ (МОДАЛЬНЫЕ ОКНА) ========== */
+        .plashka {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            z-index: 1000;
+            max-width: min(900px, 95%);
+            max-height: 90vh;
+            overflow-y: auto;
+            width: 95%;
+        }
+
+        .plashka-header {
+            position: relative;
+            height: clamp(200px, 40vh, 300px);
+            overflow: hidden;
+        }
+
+        .plashka-header img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .plashka-title {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
+            color: var(--white);
+            padding: clamp(15px, 4vw, 30px) clamp(15px, 4vw, 30px) clamp(10px, 3vw, 20px);
+        }
+
+        .plashka-title h2 {
+            font-size: clamp(1.3rem, 5vw, 2rem);
+            margin-bottom: 5px;
+        }
+
+        .plashka-title .address {
+            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+            opacity: 0.9;
+        }
+
+        .plashka-content {
+            padding: clamp(15px, 4vw, 30px);
+        }
+
+        .content-section {
+            margin-bottom: clamp(15px, 3vw, 25px);
+        }
+
+        .content-section h3 {
+            color: var(--text-dark);
+            font-size: clamp(1.1rem, 3vw, 1.4rem);
+            margin-bottom: 10px;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 5px;
+        }
+
+        .content-section p {
+            color: var(--text-muted);
+            line-height: 1.7;
+            font-size: clamp(0.9rem, 2vw, 1rem);
+            margin-bottom: 10px;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 999;
+            backdrop-filter: blur(5px);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: clamp(10px, 3vw, 15px);
+            right: clamp(10px, 3vw, 15px);
+            cursor: pointer;
+            font-size: clamp(24px, 6vw, 30px);
+            background: rgba(255,255,255,0.95);
+            border: none;
+            border-radius: 50%;
+            width: clamp(40px, 10vw, 50px);
+            height: clamp(40px, 10vw, 50px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+            transition: var(--transition);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            color: var(--text-dark);
+            font-weight: bold;
+        }
+
+        .close-btn:hover {
+            background: var(--white);
+            transform: scale(1.1);
+        }
+
+        /* ========== КОНТРОЛЫ ПОСЕЩЕНИЙ ========== */
+        .visit-control {
+            margin: 20px 0 0;
+            padding: 20px;
+            background: var(--bg-light);
+            border-radius: var(--radius-md);
+            text-align: center;
+            border-top: 1px solid var(--border);
+        }
+
+        .btn-visit {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--white);
+            border: none;
+            padding: clamp(10px, 2vw, 12px) clamp(20px, 4vw, 30px);
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: clamp(0.9rem, 2vw, 1rem);
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+        }
+
+        .btn-visit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-visit.visited {
+            background: linear-gradient(135deg, var(--success), var(--success-dark));
+        }
+
+        .visit-icon {
+            font-size: 1.2rem;
+        }
+
+        .visit-stats {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .visit-count {
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        /* ========== СКРОЛЛБАР ========== */
+        .plashka::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .plashka::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 0 0 20px 0;
+        }
+
+        .plashka::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        .plashka::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary);
+        }
+
+        /* ========== АДАПТАЦИЯ ========== */
+
+        /* Планшеты */
+        @media (max-width: 992px) {
+            .houses-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .map-container {
+                order: 2;
+            }
+
+            .btn-house {
+                order: 1;
+                max-width: 500px;
+                margin: 0 auto;
+            }
+
+            .btn-house, .map-container {
+                min-height: 300px;
+            }
+        }
+
+        /* Телефоны */
+        @media (max-width: 768px) {
+            .instruction-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .instruction-number {
+                margin-bottom: 5px;
+            }
+
+            .btn-house, .map-container {
+                min-height: 250px;
+            }
+
+            .visit-badge {
+                width: 35px;
+                height: 35px;
+                font-size: 1.2rem;
+            }
+        }
+
+        /* Маленькие телефоны */
+        @media (max-width: 576px) {
+            .header-block {
+                padding: 15px;
+            }
+
+            .btn-house, .map-container {
+                min-height: 200px;
+            }
+
+            .house-title {
+                font-size: 1rem;
+                bottom: 15px;
+            }
+
+            .plashka-header {
+                height: 180px;
+            }
+        }
+
+        /* Очень маленькие телефоны */
+        @media (max-width: 360px) {
+            .house-title {
+                font-size: 0.9rem;
+                bottom: 10px;
+            }
+
+            .btn-house::after {
+                height: 50px;
+            }
+        }
+
+        /* Ландшафтная ориентация */
+        @media (max-height: 600px) and (orientation: landscape) {
+            .plashka {
+                max-height: 85vh;
+            }
+
+            .plashka-header {
+                height: 150px;
+            }
+        }
+
+        /* Touch-устройства */
+        @media (hover: none) and (pointer: coarse) {
+            .btn-house:hover {
+                transform: none;
+            }
+
+            .btn-house:active {
+                transform: translateY(-3px);
+            }
+
+            .btn-house:hover img {
+                transform: none;
+            }
+
+            .btn-house:active img {
+                transform: scale(1.05);
+            }
+        }
+
+        /* Уменьшение анимации */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- БЛОК 1: ЗАГОЛОВОК И ИНСТРУКЦИЯ -->
+        <div class="header-block">
+            <h1>Арт-объекты</h1>
+            <p class="intro-text">Иваново — не только город ткачей и революционных традиций, но и пространство современного
+                искусства под открытым небом. Этот маршрут проведёт вас по самым ярким точкам городской
+                арт-среды: от масштабных объектов до камерных инсталляций.
+                Эти произведения — не просто украшения, а диалог прошлого и настоящего, где стены домов становятся холстами, а
+                дворы — выставочными залами. Некоторые работы меняются от сезона к сезону, другие стали
+                постоянными символами города.</p>
+
+            <h2 class="route-guide-title">Вы увидите:</h2>
+
+            <div class="instructions-list">
+                <div class="instruction-item">
+                    <div class="instruction-number">1</div>
+                    <div class="instruction-text">Гигантские граффити на фасадах исторических зданий;</div>
+                </div>
+                <div class="instruction-item">
+                    <div class="instruction-number">2</div>
+                    <div class="instruction-text">Необычные скульптуры, спрятанные в двориках;</div>
+                </div>
+                <div class="instruction-item">
+                    <div class="instruction-number">3</div>
+                    <div class="instruction-text">Интерактивные объекты, с которыми можно взаимодействовать;</div>
+                </div>
+                <div class="instruction-item">
+                    <div class="instruction-number">4</div>
+                    <div class="instruction-text">Работы местных и приглашённых художников, переосмысляющих городскую среду.</div>
+                </div>
+            </div>
+
+            <h2 class="route-guide-title">Как проходить маршрут:</h2>
+
+            <div class="instructions-list">
+                <div class="instruction-item">
+                    <div class="instruction-number">1</div>
+                    <div class="instruction-text">Следуйте по отмеченным точкам на карте;</div>
+                </div>
+                <div class="instruction-item">
+                    <div class="instruction-number">2</div>
+                    <div class="instruction-text">Читайте описания и истории создания объектов;</div>
+                </div>
+                <div class="instruction-item">
+                    <div class="instruction-number">3</div>
+                    <div class="instruction-text">Фотографируйтесь с понравившимися работами;</div>
+                </div>
+                <div class="instruction-item">
+                    <div class="instruction-number">4</div>
+                    <div class="instruction-text">Отмечайте пройденные точки в профиле, чтобы собрать полную коллекцию арт-объектов.</div>
+                </div>
+            </div>
+
+            <div class="tip-section">
+                <h3 class="tip-title">Совет</h3>
+                <p class="tip-text">Возьмите с собой фотоаппарат или смартфон — здесь много мест для эффектных кадров!</p>
+            </div>
+
+            <p>Во избежание проблем с интернетом, вы можете скачать маршрут в формате .pdf по ссылке ниже</p>
+            <a href="https://disk.yandex.ru/i/DznxJfNv7l1EiA" class="download-btn">
+                <span class="btn-icon">📥</span>
+                Скачать маршрут
+            </a>
+        </div>
+
+        <!-- Общая карта маршрута -->
+        <div class="welcome-block">
+            <div class="houses-header">
+                <h3>Карта маршрута</h3>
+                <p>Все арт-объекты на одной карте</p>
+            </div>
+            <div class="map-container" style="min-height: 400px;">
+                <script type="text/javascript" charset="utf-8" async src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3A257fe2b694f26816acf9636399b4444d4a08307169d8ebe04048a7e156d0dc63&amp;width=100%25&amp;height=100%25&amp;lang=ru_RU&amp;scroll=true"></script>
+            </div>
+        </div>
+
+        <!-- Ёжик в тумане -->
+        <div class="houses-block">
+            <div class="houses-header">
+                <h3>Ёжик в тумане</h3>
+                <p>Адрес: парк имени В.Я. Степанова</p>
+            </div>
+            <div class="houses-grid">
+                <button onclick="showPlashka('plashka2')" class="btn-house">
+                    <div class="visit-badge" id="badge-2">✓</div>
+                    <img src="https://parkstepanova.ru/wp-content/uploads/2024/11/UB4kdHXYLhQ.jpg"
+                         alt="Ёжик в тумане"
+                         loading="lazy">
+                    <div class="house-title">Ёжик в тумане</div>
+                </button>
+                <div class="map-container">
+                    <script type="text/javascript" charset="utf-8" async
+                            src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3A849200ee59baffade61a35f04721aea26b474e75257436104cf31a20bb5f787b&amp;width=100%25&amp;height=100%25&amp;lang=ru_RU&amp;scroll=true"></script>
+                </div>
+            </div>
+        </div>
+
+        <!-- Пальцы -->
+        <div class="houses-block">
+            <div class="houses-header">
+                <h3>Пальцы</h3>
+                <p>Адрес: проспект Ленина, около дома 47</p>
+            </div>
+            <div class="houses-grid">
+                <button onclick="showPlashka('plashka3')" class="btn-house">
+                    <div class="visit-badge" id="badge-3">✓</div>
+                    <img src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/29/b4/3f/fc/caption.jpg?w=1000&h=-1&s=1"
+                         alt="Пальцы"
+                         loading="lazy">
+                    <div class="house-title">Пальцы</div>
+                </button>
+                <div class="map-container">
+                    <script type="text/javascript" charset="utf-8" async
+                            src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3Aeab72f0aeb39de1388e3549ab695f64fcf47e921d4d5a0f770e29e6d7643e23f&amp;width=100%25&amp;height=100%25&amp;lang=ru_RU&amp;scroll=true"></script>
+                </div>
+            </div>
+        </div>
+
+        <!-- Аллея любви -->
+        <div class="houses-block">
+            <div class="houses-header">
+                <h3>Аллея любви</h3>
+                <p>Адрес: проспект Ленина, около дома 47</p>
+            </div>
+            <div class="houses-grid">
+                <button onclick="showPlashka('plashka4')" class="btn-house">
+                    <div class="visit-badge" id="badge-4">✓</div>
+                    <img src="https://sun9-7.userapi.com/s/v1/ig2/8dP2QM53Q1LJzjuNrjNmYuD27raDr9WLEum_ITjJPLY1lMIdcToT6Bx8SFtowPv1yqkauxMJtzeTwxgLo5K9KeUl.jpg?quality=95&as=32x21,48x32,72x48,108x72,160x107,240x160,360x240,480x320,540x360,640x427,720x480,1080x721,1280x854,1400x934&from=bu&cs=1400x0"
+                         alt="Аллея любви"
+                         loading="lazy">
+                    <div class="house-title">Аллея любви</div>
+                </button>
+                <div class="map-container">
+                    <script type="text/javascript" charset="utf-8" async
+                            src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3A2b21896a46a5e500ace422837feffa731a0e0589be16e8740685c17fb704f0ef&amp;width=100%25&amp;height=100%25&amp;lang=ru_RU&amp;scroll=true"></script>
+                </div>
+            </div>
+        </div>
+
+        <!-- Верность -->
+        <div class="houses-block">
+            <div class="houses-header">
+                <h3>Верность</h3>
+                <p>Адрес: пересечение Шереметевского проспекта и улицы 8 марта</p>
+            </div>
+            <div class="houses-grid">
+                <button onclick="showPlashka('plashka5')" class="btn-house">
+                    <div class="visit-badge" id="badge-5">✓</div>
+                    <img src="https://sun9-54.userapi.com/s/v1/ig2/XU_tq774pXKCeGQ3UItQv2ktkX4AL2B-c0UBNg9cq0vg25WfLuY5xAf9WEp-bxOs4lcbyheFQlLYyW-t1bOd54A-.jpg?quality=95&as=32x21,48x32,72x48,108x72,160x107,240x160,360x240,480x320,540x360,640x427,720x480,1080x720,1280x853,1440x960,2000x1333&from=bu&cs=2000x0"
+                         alt="Верность"
+                         loading="lazy">
+                    <div class="house-title">Верность</div>
+                </button>
+                <div class="map-container">
+                    <script type="text/javascript" charset="utf-8" async
+                            src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3Ab74c0d76fc0e0477e4abd831c2cf176659e46ee7b03ca15ce95d32d4abe74963&amp;width=100%25&amp;height=100%25&amp;lang=ru_RU&amp;scroll=true"></script>
+                </div>
+            </div>
+        </div>
+
+        <!-- Модель Гема Крови -->
+        <div class="houses-block">
+            <div class="houses-header">
+                <h3>Модель Гема Крови</h3>
+                <p>Адрес: Шереметевский просп., 7</p>
+            </div>
+            <div class="houses-grid">
+                <button onclick="showPlashka('plashka6')" class="btn-house">
+                    <div class="visit-badge" id="badge-6">✓</div>
+                    <img src="https://i3vestno.ru/images/2021/09/14/a43eeed5245743ce814a25bf42406c17.jpg"
+                         alt="Модель Гема Крови"
+                         loading="lazy">
+                    <div class="house-title">Модель Гема Крови</div>
+                </button>
+                <div class="map-container">
+                    <script type="text/javascript" charset="utf-8" async
+                            src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3A0a88576be1334fc2652585fb097684702118cd1ccea8dbaa72571e03838ef58a&amp;width=100%25&amp;height=100%25&amp;lang=ru_RU&amp;scroll=true"></script>
+                </div>
+            </div>
+        </div>
+
+        <!-- Волк с теленком -->
+        <div class="houses-block">
+            <div class="houses-header">
+                <h3>Волк с теленком</h3>
+                <p>Адрес: ул. Театральная, 25</p>
+            </div>
+            <div class="houses-grid">
+                <button onclick="showPlashka('plashka7')" class="btn-house">
+                    <div class="visit-badge" id="badge-7">✓</div>
+                    <img src="https://avatars.mds.yandex.net/get-altay/1371862/2a00000165c95bf333f6130bb98bff6b36d1/L_height"
+                         alt="Волк с теленком"
+                         loading="lazy">
+                    <div class="house-title">Волк с теленком</div>
+                </button>
+                <div class="map-container">
+                    <script type="text/javascript" charset="utf-8" async
+                            src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3A0c62a8fa850fd5e7381c9f6081ef195ae6c19434fa3ac02f10410c4c2f3e4155&amp;width=100%25&amp;height=100%25&amp;lang=ru_RU&amp;scroll=true"></script>
+                </div>
+            </div>
+        </div>
+
+        <!-- Акула пера -->
+        <div class="houses-block">
+            <div class="houses-header">
+                <h3>Акула пера</h3>
+                <p>Адрес: ул. Степанова, 7</p>
+            </div>
+            <div class="houses-grid">
+                <button onclick="showPlashka('plashka8')" class="btn-house">
+                    <div class="visit-badge" id="badge-8">✓</div>
+                    <img src="https://sun9-52.userapi.com/s/v1/ig2/EhQBUMVSsUwnxgRmv4rOWozM8L_JkyuJF9dEOffWJbjfFktbazBPiSx2MLVopKwj5GS8iQqZDt4CUSpKcPzHKfgh.jpg?quality=95&as=32x24,48x36,72x54,108x81,160x120,240x180,360x270,480x360,540x405,640x480,720x540,1024x768&from=bu&cs=1024x0"
+                         alt="Акула пера"
+                         loading="lazy">
+                    <div class="house-title">Акула пера</div>
+                </button>
+                <div class="map-container">
+                    <script type="text/javascript" charset="utf-8" async
+                            src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3Aacd8178a4f2f7ea11d2acd1ea3802a897cb5640df9fab0216cff290aeb067f04&amp;width=100%25&amp;height=100%25&amp;lang=ru_RU&amp;scroll=true"></script>
+                </div>
+            </div>
+        </div>
+
+        <!-- Прялка -->
+        <div class="houses-block">
+            <div class="houses-header">
+                <h3>Прялка</h3>
+                <p>Адрес: площадь Революции</p>
+            </div>
+            <div class="houses-grid">
+                <button onclick="showPlashka('plashka9')" class="btn-house">
+                    <div class="visit-badge" id="badge-9">✓</div>
+                    <img src="https://sun9-10.userapi.com/s/v1/ig2/fM9wetx0c-NUJlndK2mnE2saz8hI6Z9Zw2eOchuoW-oSC7ujh9AC71nWcdmOLXkK0bL5KTfcVfJiR-GOwIfFZ67f.jpg?quality=95&as=32x19,48x28,72x42,108x63,160x94,240x141,360x211,480x282,540x317,640x376,720x423,1080x634,1202x706&from=bu&cs=1202x0"
+                         alt="Прялка"
+                         loading="lazy">
+                    <div class="house-title">Прялка</div>
+                </button>
+                <div class="map-container">
+                    <script type="text/javascript" charset="utf-8" async
+                            src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3Acb8706a1f994994ed2a8e8f957d03fcebc6819cff29f61e3e2cc0e4f196eacb0&amp;width=100%25&amp;height=100%25&amp;lang=ru_RU&amp;scroll=true"></script>
+                </div>
+            </div>
+        </div>
+
+        <!-- Такса -->
+        <div class="houses-block">
+            <div class="houses-header">
+                <h3>Такса</h3>
+                <p>Адрес: ул. 10 Августа, Арт-сквер</p>
+            </div>
+            <div class="houses-grid">
+                <button onclick="showPlashka('plashka10')" class="btn-house">
+                    <div class="visit-badge" id="badge-10">✓</div>
+                    <img src="https://sun9-88.userapi.com/s/v1/ig2/eEAGgoFZNlwxiRwXiBQN-KmaVrTe0YZtlCmYm7jTuJ4NltzT7A4i8HlA0JYphCDVSeb5BuTJNIWj_0AGi0qL4Ctx.jpg?quality=95&as=32x24,48x36,72x54,108x81,160x120,240x180,360x270,480x360,540x405,640x480,720x540,1024x768&from=bu&cs=1024x0"
+                         alt="Такса"
+                         loading="lazy">
+                    <div class="house-title">Такса</div>
+                </button>
+                <div class="map-container">
+                    <script type="text/javascript" charset="utf-8" async
+                            src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3Abaa9d52ed0057cc409cea159b2d134055bc810a3fdcfe8200e2764f62f2c87aa&amp;width=100%25&amp;height=100%25&amp;lang=ru_RU&amp;scroll=true"></script>
+                </div>
+            </div>
+        </div>
+
+        <!-- Первый Стоматолог -->
+        <div class="houses-block">
+            <div class="houses-header">
+                <h3>Первый Стоматолог</h3>
+                <p>Адрес: ул. Лежневская, около ТЦ «Тополь»</p>
+            </div>
+            <div class="houses-grid">
+                <button onclick="showPlashka('plashka11')" class="btn-house">
+                    <div class="visit-badge" id="badge-11">✓</div>
+                    <img src="https://vtrip.ru/uploads/russia/ivanovo/pervyistomatolog2.jpg"
+                         alt="Первый Стоматолог"
+                         loading="lazy">
+                    <div class="house-title">Первый Стоматолог</div>
+                </button>
+                <div class="map-container">
+                    <script type="text/javascript" charset="utf-8" async
+                            src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3Aa299e1747aacdcc81a4c7f1ae6eb15923a91ea2b21956b9ff257ef3bd9cc9488&amp;width=100%25&amp;height=100%25&amp;lang=ru_RU&amp;scroll=true"></script>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Оверлей -->
+    <div class="overlay" id="overlay" onclick="hideAllPlashkas()"></div>
+
+    <!-- Плашка 2 - Ёжик в тумане -->
+    <div class="plashka" id="plashka2">
+        <div class="plashka-header">
+            <img src="https://sun9-6.userapi.com/s/v1/ig2/sCCPuYp_86n5J2WMb_HXX7URgiY_fVrXU6RKUytAwVkwVY5Uf8bpJSkx1EESdrgu_7dtc2icsRxFSEVY1vLCizhu.jpg?quality=95&as=32x17,48x26,72x39,108x58,160x86,240x129,360x194,480x259,540x291,640x345,720x388,1080x583,1280x690,1440x777,2560x1381&from=bu&cs=2560x0" alt="Ёжик в тумане">
+            <div class="plashka-title">
+                <h2>Ёжик в тумане</h2>
+                <div class="address">Адрес: парк имени В.Я. Степанова</div>
+            </div>
+        </div>
+        <button class="close-btn" onclick="hideAllPlashkas()">×</button>
+
+        <div class="plashka-content">
+            <div class="content-section">
+                <h3>📖 История</h3>
+                <p>Скульптура «Ёжик в тумане» появилась в парке им. В.Я. Степанова в 2023 году как часть проекта по благоустройству городской среды.</p>
+                <p>Объект создан по мотивам знаменитого советского мультфильма Юрия Норштейна, который стал символом детства для нескольких поколений.</p>
+                <p>Скульптура быстро полюбилась горожанам и стала популярным местом для фотографий и семейных прогулок.</p>
+            </div>
+
+            <div class="content-section">
+                <h3>🎨 Описание</h3>
+                <p>Бронзовая скульптура изображает ёжика, который с любопытством смотрит в туманную даль.</p>
+                <p>Высота композиции — 1,2 метра, вес — около 150 кг.</p>
+                <p>Особенность скульптуры — её интерактивность: дети и взрослые могут присесть рядом с ёжиком, погладить его или сфотографироваться.</p>
+            </div>
+
+            <div class="content-section">
+                <h3>🌟 Интересные факты</h3>
+                <p>• Скульптура была отлита на местном предприятии «Ивановский художественный литьё».</p>
+                <p>• Автор проекта — ивановский скульптор Алексей Морозов.</p>
+                <p>• Это уже вторая версия скульптуры — первая, деревянная, стояла здесь с 2018 по 2021 год.</p>
+                <p>• По традиции, ёжику дарят маленькие подарки: дети часто оставляют рядом с ним желуди, шишки и цветы.</p>
+            </div>
+        </div>
+        <div class="visit-control" id="visit-control-2">
+            <button class="btn-visit" onclick="toggleVisit(2)" id="visit-btn-2">
+                <span class="visit-icon">☐</span>
+                <span class="visit-text">Отметить посещение</span>
+            </button>
+            <div class="visit-stats">
+                Посетили: <span class="visit-count" id="visit-count-2">0</span> пользователей
+            </div>
+        </div>
+    </div>
+
+    <!-- Плашка 3 - Пальцы -->
+    <div class="plashka" id="plashka3">
+        <div class="plashka-header">
+            <img src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/29/b4/3f/fc/caption.jpg?w=1000&h=-1&s=1" alt="Пальцы">
+            <div class="plashka-title">
+                <h2>Пальцы</h2>
+                <div class="address">Адрес: проспект Ленина, около дома 47</div>
+            </div>
+        </div>
+        <button class="close-btn" onclick="hideAllPlashkas()">×</button>
+
+        <div class="plashka-content">
+            <div class="content-section">
+                <h3>📖 История</h3>
+                <p>Арт-объект «Пальцы» в Иванове — это жанровая скульптура, расположенная в сквере рядом с «Домом-кораблём» на проспекте Ленина. Он появился 14 августа 2017 года и называется "Заботливая рука". Данный объект напоминает нам о бережном отношении к природе. Дерево словно прорастает из гигантской ладони. Автор скульптуры Игорь Бычков.</p>
+            </div>
+
+            <div class="content-section">
+                <h3>🎨 Описание</h3>
+                <p>Скульптура иногда становится фоном для городских мероприятий (фестивали, флешмобы). В соцсетях встречаются хештег #ПальцыИваново. Несмотря на простоту формы, объект вызвал дискуссии: одни хвалят его за оригинальность, другие критикуют за «неоднозначность» образа.</p>
+            </div>
+
+            <div class="content-section">
+                <h3>🌟 Интересный факт</h3>
+                <p>«Пальцы» — это не монумент, а лёгкий, ироничный акцент городского пространства, который: оживляет пейзаж, стимулирует креативность (фото, сторис), становится частью повседневной жизни ивановцев.</p>
+            </div>
+        </div>
+        <div class="visit-control" id="visit-control-3">
+            <button class="btn-visit" onclick="toggleVisit(3)" id="visit-btn-3">
+                <span class="visit-icon">☐</span>
+                <span class="visit-text">Отметить посещение</span>
+            </button>
+            <div class="visit-stats">
+                Посетили: <span class="visit-count" id="visit-count-3">0</span> пользователей
+            </div>
+        </div>
+    </div>
+
+    <!-- Плашка 4 - Аллея любви -->
+    <div class="plashka" id="plashka4">
+        <div class="plashka-header">
+            <img src="https://sun9-7.userapi.com/s/v1/ig2/8dP2QM53Q1LJzjuNrjNmYuD27raDr9WLEum_ITjJPLY1lMIdcToT6Bx8SFtowPv1yqkauxMJtzeTwxgLo5K9KeUl.jpg?quality=95&as=32x21,48x32,72x48,108x72,160x107,240x160,360x240,480x320,540x360,640x427,720x480,1080x721,1280x854,1400x934&from=bu&cs=1400x0" alt="Аллея любви">
+            <div class="plashka-title">
+                <h2>Аллея любви</h2>
+                <div class="address">Адрес: проспект Ленина, около дома 47</div>
+            </div>
+        </div>
+        <button class="close-btn" onclick="hideAllPlashkas()">×</button>
+
+        <div class="plashka-content">
+            <div class="content-section">
+                <h3>📖 История</h3>
+                <p>Аллея Влюблённых расположена в Сквере Мастеров на Центральной набережной Иванова. Аллея начала формироваться в 2017 году как часть городского проекта по обустройству романтических локаций. Её создание было вдохновлено трендом на «места любви» в российских городах — зоны с арт-объектами для фотосессий и символических ритуалов.</p>
+            </div>
+
+            <div class="content-section">
+                <h3>🎨 Объекты</h3>
+                <p>• Надпись «Love» — крупная металлическая конструкция с англоязычной надписью. Популярное место для селфи, особенно у молодожёнов и пар.</p>
+                <p>• Три скамьи-сердца — лавки оригинальной формы, выполненные из металла или дерева. Служат одновременно местом отдыха и фотозоной.</p>
+                <p>• Шесть гигантских сердец — вертикальные конструкции в форме сердец, выстроенные в линию. Создают эффект «тоннеля любви», через который пары проходят, чтобы загадать желание.</p>
+            </div>
+        </div>
+        <div class="visit-control" id="visit-control-4">
+            <button class="btn-visit" onclick="toggleVisit(4)" id="visit-btn-4">
+                <span class="visit-icon">☐</span>
+                <span class="visit-text">Отметить посещение</span>
+            </button>
+            <div class="visit-stats">
+                Посетили: <span class="visit-count" id="visit-count-4">0</span> пользователей
+            </div>
+        </div>
+    </div>
+
+    <!-- Плашка 5 - Верность -->
+    <div class="plashka" id="plashka5">
+        <div class="plashka-header">
+            <img src="https://sun9-84.userapi.com/s/v1/ig2/LfBKKv2J7B5QpU2UmmZqJPMg1vsCymx_xjs_cE7gkTmVgTUrqnF0EwbYH2KGjRh0gJ-YmWC3CQUx0Q8347VTWnti.jpg?quality=95&as=32x17,48x25,72x37,108x56,160x83,240x125,360x187,480x250,540x281,640x333,720x374,1080x562,1280x665,1440x749,2560x1331&from=bu&cs=2560x0" alt="Верность">
+            <div class="plashka-title">
+                <h2>Верность</h2>
+                <div class="address">Адрес: пересечение Шереметевского проспекта и улицы 8 марта</div>
+            </div>
+        </div>
+        <button class="close-btn" onclick="hideAllPlashkas()">×</button>
+
+        <div class="plashka-content">
+            <div class="content-section">
+                <h3>📖 История</h3>
+                <p>Памятник «Верность» в Иванове — это жанровая скульптура, посвящённая бездомным животным. Она была создана в 2017 году и установлена на пересечении Шереметевского проспекта и улицы 8 Марта.</p>
+            </div>
+
+            <div class="content-section">
+                <h3>🎨 Описание</h3>
+                <p>Скульптура изображает собаку и кота, которые сидят на канализационном люке и ждут своего хозяина. Композиция символизирует крепкую дружную семью, в которой в любви и гармонии живут люди и животные. Собака олицетворяет верность, а кот — ласку и домашнее тепло. Инициатором установки памятника стала руководитель приюта «Майский день» Наталья Иванова. Автором скульптуры является ивановский скульптор Игорь Бычков.</p>
+            </div>
+
+            <div class="content-section">
+                <h3>🌟 Особенности</h3>
+                <p>Памятник отлит в бронзе. Один из фрагментов скульптуры — настоящая копилка. Любой желающий может сфотографироваться с бронзовыми питомцами, «надеть» скульптурные тапочки и опустить монетку или купюру в прорезь копилки. Все собранные средства поступают на содержание бездомных животных.</p>
+            </div>
+        </div>
+        <div class="visit-control" id="visit-control-5">
+            <button class="btn-visit" onclick="toggleVisit(5)" id="visit-btn-5">
+                <span class="visit-icon">☐</span>
+                <span class="visit-text">Отметить посещение</span>
+            </button>
+            <div class="visit-stats">
+                Посетили: <span class="visit-count" id="visit-count-5">0</span> пользователей
+            </div>
+        </div>
+    </div>
+
+    <!-- Плашка 6 - Модель Гема Крови -->
+    <div class="plashka" id="plashka6">
+        <div class="plashka-header">
+            <img src="https://i3vestno.ru/images/2021/09/14/a43eeed5245743ce814a25bf42406c17.jpg" alt="Модель Гема Крови">
+            <div class="plashka-title">
+                <h2>Модель Гема Крови</h2>
+                <div class="address">Адрес: Шереметевский просп., 7</div>
+            </div>
+        </div>
+        <button class="close-btn" onclick="hideAllPlashkas()">×</button>
+
+        <div class="plashka-content">
+            <div class="content-section">
+                <h3>📖 История</h3>
+                <p>Арт-объект «Модель гема крови» в Иванове — это металлическая скульптура, изображающая молекулярную структуру гема — железосодержащего компонента гемоглобина, который отвечает за связывание и транспортировку кислорода в крови. Композиция установлена у главного корпуса Ивановского государственного химико-технологического университета (ИГХТУ) на Шереметевском проспекте в сентябре 2021 года.</p>
+            </div>
+
+            <div class="content-section">
+                <h3>🎨 Описание</h3>
+                <p>Композиция представляет собой конструкцию из металлических полусфер (символизирующих атомы), соединённых прутами. Инициатором установки стал О.И. Койфман — доктор наук, профессор, член-корреспондент РАН, ректор, а затем президент ИГХТУ. Помощь в финансировании оказала частная компания «ХимФарСинтез».</p>
+            </div>
+
+            <div class="content-section">
+                <h3>🌟 Образовательное значение</h3>
+                <p>Идея создания памятника возникла на фоне пандемии коронавируса. Койфман отметил, что гем — это «природный транспортёр» кислорода, и его роль в обеспечении дыхания и жизни особенно актуальна в условиях заболеваний, поражающих органы дыхания.</p>
+            </div>
+        </div>
+        <div class="visit-control" id="visit-control-6">
+            <button class="btn-visit" onclick="toggleVisit(6)" id="visit-btn-6">
+                <span class="visit-icon">☐</span>
+                <span class="visit-text">Отметить посещение</span>
+            </button>
+            <div class="visit-stats">
+                Посетили: <span class="visit-count" id="visit-count-6">0</span> пользователей
+            </div>
+        </div>
+    </div>
+
+    <!-- Плашка 7 - Волк с теленком -->
+    <div class="plashka" id="plashka7">
+        <div class="plashka-header">
+            <img src="https://sun9-28.userapi.com/s/v1/ig2/dY5mEQ2cChKyQ2Hlc5P_Gzbp0MJLI5AO4c5bxkTMGKSDS5nInj9i5dMaKa5NRRaZ1dVkdxkoIEv5DNyi7bAMDZkM.jpg?quality=95&as=32x16,48x25,72x37,108x56,160x82,240x124,360x185,480x247,540x278,640x330,720x371,1080x556,1093x563&from=bu&cs=1093x0" alt="Волк с теленком">
+            <div class="plashka-title">
+                <h2>Волк с теленком</h2>
+                <div class="address">Адрес: ул. Театральная, 25</div>
+            </div>
+        </div>
+        <button class="close-btn" onclick="hideAllPlashkas()">×</button>
+
+        <div class="plashka-content">
+            <div class="content-section">
+                <h3>📖 История</h3>
+                <p>Скульптура «Волк с телёнком» в Иванове — это жанровая композиция, созданная по мотивам одноимённого советского кукольного мультфильма 1984 года режиссёра Михаила Каменецкого. Арт-объект расположен у входа в детскую поликлинику №6.</p>
+            </div>
+
+            <div class="content-section">
+                <h3>🎨 Описание</h3>
+                <p>Скульптура выполнена из металла. Композиция изображает добродушного волка, который держит на руках маленького телёнка. Узнаваемая поза фигур сразу ассоциируется с мультфильмом. На постаменте под ногами волка размещена надпись: «Папаня!!!» — отсылка к знаменитому восклицанию телёнка из мультфильма. Автор скульптуры — Владимир Волков, художник-любитель, сварщик по образованию.</p>
+            </div>
+
+            <div class="content-section">
+                <h3>🌟 Особенность</h3>
+                <p>Скульптура стала популярным местом для фотосессий, особенно среди семей с детьми. Она добавляет шутливости и уюта городской среде, напоминая о советском кинематографе.</p>
+            </div>
+        </div>
+        <div class="visit-control" id="visit-control-7">
+            <button class="btn-visit" onclick="toggleVisit(7)" id="visit-btn-7">
+                <span class="visit-icon">☐</span>
+                <span class="visit-text">Отметить посещение</span>
+            </button>
+            <div class="visit-stats">
+                Посетили: <span class="visit-count" id="visit-count-7">0</span> пользователей
+            </div>
+        </div>
+    </div>
+
+    <!-- Плашка 8 - Акула пера -->
+    <div class="plashka" id="plashka8">
+        <div class="plashka-header">
+            <img src="https://sun9-52.userapi.com/s/v1/ig2/EhQBUMVSsUwnxgRmv4rOWozM8L_JkyuJF9dEOffWJbjfFktbazBPiSx2MLVopKwj5GS8iQqZDt4CUSpKcPzHKfgh.jpg?quality=95&as=32x24,48x36,72x54,108x81,160x120,240x180,360x270,480x360,540x405,640x480,720x540,1024x768&from=bu&cs=1024x0" alt="Акула пера">
+            <div class="plashka-title">
+                <h2>Акула пера</h2>
+                <div class="address">Адрес: ул. Степанова, 7</div>
+            </div>
+        </div>
+        <button class="close-btn" onclick="hideAllPlashkas()">×</button>
+
+        <div class="plashka-content">
+            <div class="content-section">
+                <h3>📖 История</h3>
+                <p>Скульптура «Акула пера» в Иванове — это жанровая композиция, установленная в 2015 году в честь 110-летия газеты «Рабочий край». Она расположена перед зданием редакции издания.</p>
+            </div>
+
+            <div class="content-section">
+                <h3>🎨 Описание</h3>
+                <p>Скульптура выполнена из железа в стиле стрит-арта. Она изображает акулу, которая стоит на заднем плавнике, стилизованном под перьевой наконечник ручки. Акула внимательно «читает» газету «РК» — отсылка к «Рабочему краю». Автор работы — Владимир Волков, известный ивановский скульптор. Композиция метафорически отражает образ журналистов и писателей, чьи острые слова могут быть столь же мощными, как и зубы акулы.</p>
+            </div>
+
+            <div class="content-section">
+                <h3>🌟 Особенность</h3>
+                <p>Скульптура стала популярным местом для фотосессий, особенно среди учеников соседней школы. У неё появилась городская традиция: люди трут акуле нос и плавники на удачу. При установке скульптуры журналисты заложили в её основание бутылку с посланием для будущих поколений коллег, а также 110 монет — по одной на каждый год существования газеты.</p>
+            </div>
+        </div>
+        <div class="visit-control" id="visit-control-8">
+            <button class="btn-visit" onclick="toggleVisit(8)" id="visit-btn-8">
+                <span class="visit-icon">☐</span>
+                <span class="visit-text">Отметить посещение</span>
+            </button>
+            <div class="visit-stats">
+                Посетили: <span class="visit-count" id="visit-count-8">0</span> пользователей
+            </div>
+        </div>
+    </div>
+
+    <!-- Плашка 9 - Прялка -->
+    <div class="plashka" id="plashka9">
+        <div class="plashka-header">
+            <img src="https://sun9-10.userapi.com/s/v1/ig2/fM9wetx0c-NUJlndK2mnE2saz8hI6Z9Zw2eOchuoW-oSC7ujh9AC71nWcdmOLXkK0bL5KTfcVfJiR-GOwIfFZ67f.jpg?quality=95&as=32x19,48x28,72x42,108x63,160x94,240x141,360x211,480x282,540x317,640x376,720x423,1080x634,1202x706&from=bu&cs=1202x0" alt="Прялка">
+            <div class="plashka-title">
+                <h2>Прялка</h2>
+                <div class="address">Адрес: площадь Революции</div>
+            </div>
+        </div>
+        <button class="close-btn" onclick="hideAllPlashkas()">×</button>
+
+        <div class="plashka-content">
+            <div class="content-section">
+                <h3>📖 История</h3>
+                <p>Арт-объект «Прялка» в Иванове — это скульптурная композиция, установленная в сквере на площади Революции. Он стал частью праздничных мероприятий, посвящённых 150-летию города. «Прялка» появилась в 2021 году. Её изготовила компания «Профессионал» и подарила городу в качестве меценатского вклада. Ранее на этом месте находился арт-объект «Девушка с прялкой», который в 2021 году перенесли в парк имени В. Я. Степанова.</p>
+            </div>
+
+            <div class="content-section">
+                <h3>🎨 Описание</h3>
+                <p>Композиция выполнена из металла, окрашенного под дерево, что создаёт иллюзию деревянной прялки. Рядом с ней установлена скамейка с праздничной символикой: её каркас металлический, а декоративные элементы — деревянные. На блестящей табличке, прикреплённой к объекту, изображены герб Иваново, прежнее название города — Иваново-Вознесенск и карта Ивановской области.</p>
+            </div>
+        </div>
+        <div class="visit-control" id="visit-control-9">
+            <button class="btn-visit" onclick="toggleVisit(9)" id="visit-btn-9">
+                <span class="visit-icon">☐</span>
+                <span class="visit-text">Отметить посещение</span>
+            </button>
+            <div class="visit-stats">
+                Посетили: <span class="visit-count" id="visit-count-9">0</span> пользователей
+            </div>
+        </div>
+    </div>
+
+    <!-- Плашка 10 - Такса -->
+    <div class="plashka" id="plashka10">
+        <div class="plashka-header">
+            <img src="https://sun9-88.userapi.com/s/v1/ig2/eEAGgoFZNlwxiRwXiBQN-KmaVrTe0YZtlCmYm7jTuJ4NltzT7A4i8HlA0JYphCDVSeb5BuTJNIWj_0AGi0qL4Ctx.jpg?quality=95&as=32x24,48x36,72x54,108x81,160x120,240x180,360x270,480x360,540x405,640x480,720x540,1024x768&from=bu&cs=1024x0" alt="Такса">
+            <div class="plashka-title">
+                <h2>Такса</h2>
+                <div class="address">Адрес: ул. 10 Августа, Арт-сквер</div>
+            </div>
+        </div>
+        <button class="close-btn" onclick="hideAllPlashkas()">×</button>
+
+        <div class="plashka-content">
+            <div class="content-section">
+                <h3>📖 История</h3>
+                <p>Скульптура «Такса» в Иванове — это бронзовая фигура, установленная в Арт-сквере на улице 10 Августа. Она стала одной из популярных достопримечательностей города. Скульптура была открыта в 2010 году. Её автор — скульптор Артемий Черкасов. Фигура таксы выполнена таким образом, что её вытянутое туловище напоминает скамейку — на неё любят садиться дети и взрослые.</p>
+            </div>
+
+            <div class="content-section">
+                <h3>🎨 Описание</h3>
+                <p>У скульптуры появилось неофициальное имя — Люси. Считается, что погладить таксу или потереть её нос и уши — к удаче. Со временем эти части тела заметно отполированы из-за традиции «на удачу». Арт-сквер, где расположена такса, также известен памятником Аркадию Северному — советскому певцу и гитаристу.</p>
+            </div>
+        </div>
+        <div class="visit-control" id="visit-control-10">
+            <button class="btn-visit" onclick="toggleVisit(10)" id="visit-btn-10">
+                <span class="visit-icon">☐</span>
+                <span class="visit-text">Отметить посещение</span>
+            </button>
+            <div class="visit-stats">
+                Посетили: <span class="visit-count" id="visit-count-10">0</span> пользователей
+            </div>
+        </div>
+    </div>
+
+    <!-- Плашка 11 - Первый Стоматолог -->
+    <div class="plashka" id="plashka11">
+        <div class="plashka-header">
+            <img src="https://sun9-40.userapi.com/s/v1/ig2/Hzmml06KE7DKKsD9YUgXqBsxr5a4WTcNVFPCkvZIfM6NPekSpMXUYQE6mNv7j-24N5U4MBF5dlLSjRUXB6tVbl3B.jpg?quality=95&as=32x19,48x28,72x42,108x63,160x94,240x140,360x211,480x281,540x316,640x375,720x421,1080x632,1280x749,1396x817&from=bu&cs=1396x0" alt="Первый Стоматолог">
+            <div class="plashka-title">
+                <h2>Первый Стоматолог</h2>
+                <div class="address">Адрес: ул. Лежневская, около ТЦ «Тополь»</div>
+            </div>
+        </div>
+        <button class="close-btn" onclick="hideAllPlashkas()">×</button>
+
+        <div class="plashka-content">
+            <div class="content-section">
+                <h3>📖 История</h3>
+                <p>Скульптура «Первый стоматолог» в Иванове — это бронзовая композиция, изображающая улыбающегося крокодила и миниатюрную птичку Тари — персонажей советского мультфильма. Арт-объект расположен на площадке перед торговым центром «Тополь» на Лежневской улице. Скульптура появилась в ноябре 2018 года. Её создал скульптор Сергей Букин, а эскиз разработал ивановский дизайнер Николай Дроздов. На отливку фигуры из бронзы ушло около полугода и примерно 600 кг металла. Инициатором установки скульптуры стал врач-стоматолог Андрей Стволыгин.</p>
+            </div>
+
+            <div class="content-section">
+                <h3>🌟 Особенность</h3>
+                <p>Высота скульптуры — 1,5 метра. После нескольких случаев похищения птичку Тари утяжелили, чтобы предотвратить подобные инциденты в будущем.</p>
+            </div>
+        </div>
+        <div class="visit-control" id="visit-control-11">
+            <button class="btn-visit" onclick="toggleVisit(11)" id="visit-btn-11">
+                <span class="visit-icon">☐</span>
+                <span class="visit-text">Отметить посещение</span>
+            </button>
+            <div class="visit-stats">
+                Посетили: <span class="visit-count" id="visit-count-11">0</span> пользователей
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showPlashka(plashkaId) {
+            hideAllPlashkas();
+            document.getElementById(plashkaId).style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function hideAllPlashkas() {
+            const plashkas = document.querySelectorAll('.plashka');
+            plashkas.forEach(plashka => {
+                plashka.style.display = 'none';
+            });
+            document.getElementById('overlay').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                hideAllPlashkas();
+            }
+        });
+
+        document.querySelectorAll('.plashka').forEach(plashka => {
+            plashka.addEventListener('click', function(event) {
+                event.stopPropagation();
+            });
+        });
+
+        // Хранилище для посещённых мест
+        let visitedPlaces = JSON.parse(localStorage.getItem('visited_places') || '[]');
+
+        function updateVisitBadges() {
+            // Для всех кнопок (от 2 до 11)
+            for (let id = 2; id <= 11; id++) {
+                const badge = document.getElementById(`badge-${id}`);
+                const btn = document.getElementById(`visit-btn-${id}`);
+
+                if (badge && visitedPlaces.includes(id.toString())) {
+                    badge.classList.add('visible');
+                    if (btn) {
+                        btn.classList.add('visited');
+                        btn.querySelector('.visit-text').textContent = 'Посещено ✓';
+                    }
+                } else {
+                    if (badge) badge.classList.remove('visible');
+                    if (btn) {
+                        btn.classList.remove('visited');
+                        btn.querySelector('.visit-text').textContent = 'Отметить посещение';
+                    }
+                }
+            }
+        }
+
+        function toggleVisit(placeId) {
+            const isLoggedIn = {{ 'true' if session.user_id else 'false' }};
+
+            if (!isLoggedIn) {
+                alert('Для отметки посещения необходимо войти в систему!');
+                hideAllPlashkas();
+                return;
+            }
+
+            const placeIdStr = placeId.toString();
+            const index = visitedPlaces.indexOf(placeIdStr);
+
+            if (index === -1) {
+                visitedPlaces.push(placeIdStr);
+                const countElement = document.getElementById(`visit-count-${placeId}`);
+                if (countElement) {
+                    const currentCount = parseInt(countElement.textContent) || 0;
+                    countElement.textContent = currentCount + 1;
+                }
+                alert('Место отмечено как посещённое!');
+            } else {
+                visitedPlaces.splice(index, 1);
+                const countElement = document.getElementById(`visit-count-${placeId}`);
+                if (countElement) {
+                    const currentCount = parseInt(countElement.textContent) || 1;
+                    countElement.textContent = Math.max(0, currentCount - 1);
+                }
+                alert('Отметка о посещении удалена!');
+            }
+
+            localStorage.setItem('visited_places', JSON.stringify(visitedPlaces));
+            updateVisitBadges();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            updateVisitBadges();
+
+            // Инициализация счетчиков
+            for (let id = 2; id <= 11; id++) {
+                const countElement = document.getElementById(`visit-count-${id}`);
+                if (countElement && !countElement.textContent.trim()) {
+                    countElement.textContent = '0';
+                }
+            }
+        });
+    </script>
+</body>
+
+{% endblock %}
+</html>
